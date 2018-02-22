@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCommandParser", "Simp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCommandParser.Tests", "SimpleCommandParser.Tests\SimpleCommandParser.Tests.csproj", "{ED9E26F0-CA85-4B4B-9BFC-1573CC7E1EAC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Git", "Git", "{0C1BD847-20E1-4EB6-B0AC-C62C47F7BB37}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
