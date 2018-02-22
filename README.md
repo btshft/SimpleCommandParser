@@ -13,10 +13,10 @@
 
 ```C#
 class MyCommand {
-      [Argument(Key = "arg1")]
+      [Argument(key:"arg1")]
       public string OptionOne { get; set; }
 
-      [Argument(Key = "arg2", required: false)]
+      [Argument(key:"arg2", required: false)]
       public string OptionTwo { get; set } 
 }
 
