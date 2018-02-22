@@ -1,5 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <VersionPrefix>1.0.1</VersionPrefix>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>Command parse library</Title>
+    <Description>Library for parsing command like string as strongly typed model.</Description>
+    <Authors>bitshift.it@icloud.com</Authors>
+    <Copyright>Copyright © Igor Polyakov 2018</Copyright>
+    <PackageProjectUrl>https://github.com/rex-core/SimpleCommandParser</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/rex-core/SimpleCommandParser/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/rex-core/SimpleCommandParser.git</RepositoryUrl>
   </PropertyGroup>
 </Project>
