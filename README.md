@@ -13,10 +13,10 @@
 
 ```C#
 class MyCommand {
-      [Argument(key:"arg1")]
+      [Argument(key: "arg1")]
       public string OptionOne { get; set; }
 
-      [Argument(key:"arg2", required: false)]
+      [Argument(key: "arg2", required: false)]
       public string OptionTwo { get; set } 
 }
 
@@ -44,4 +44,4 @@ CommandParser.Default.ParseCommands("one -arg1 abs -arg2 de", new [] { typeof(On
 ```
 
 ## Точки расширения
-TODO
+`TODO`
