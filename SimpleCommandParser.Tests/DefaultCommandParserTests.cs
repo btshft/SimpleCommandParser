@@ -184,6 +184,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
+            
             var input = "signal -arg1 abc -arg2 ddd -arg6 hhh";
             
             // Act
@@ -311,6 +312,24 @@ namespace SimpleCommandParser.Tests
 
         #region ICommandParseResultExtensions
 
+        [Fact]
+        public void WhenParsed_SingleCommand_SingleHandlerCalled()
+        {
+            // Arrange
+            var parser = CommandParser.Default;
+            var input = "first -arg1 abc -arg2 10";
+            
+            var isFirstCommandHandlerCalled = false;
+            
+            // Act
+            var result = parser
+                .ParseCommand<FirstCommand>(input)
+                .WhenParsed(_ => isFirstCommandHandlerCalled = true);
+            
+            // Assert         
+            Assert.True(isFirstCommandHandlerCalled);
+        }
+        
         [Fact]
         public void WhenParsed_SingleHandlerCalled_If_CommandParsed()
         {

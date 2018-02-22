@@ -127,12 +127,7 @@ namespace SimpleCommandParser.Core.Tokenizer
                 verb = verb?.Substring(Settings.CommandVerbPrefix.Length);
             }
             
-            if (verb == null)
-            {
-                return false;
-            }
-
-            return true;
+            return verb != null;
         }
 
         /// <summary>
@@ -194,6 +189,12 @@ namespace SimpleCommandParser.Core.Tokenizer
             return true;
         }
 
+        /// <summary>
+        /// Валидатция того, что настройки являются валидными.
+        /// </summary>
+        /// <param name="settings">Настройки.</param>
+        /// <exception cref="ArgumentNullException">В случае, если настройки <c>null</c>.</exception>
+        /// <exception cref="CommandParserException">В случае, если настройки не валидны.</exception>
         protected virtual void EnsureSettingsValid(ICommandParserSettings settings)
         {
             if (settings == null)
