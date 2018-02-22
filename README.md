@@ -43,5 +43,20 @@ CommandParser.Default.ParseCommands("one -arg1 abs -arg2 de", new [] { typeof(On
         .WhenNotParsed(err => HandleError(err));
 ```
 
+## Конфигураци
+
+Конфигурация компонента доступна через метод `Configure` или через конструктор класса `CommandParser`.
+
+```C#
+CommandParser.Default.Configure(MutableCommandParserSettings settings => UpdateCommandParserSettings(settings));
+```
+
+### Настройки
+
+* `StringComparsion` - Культура сравнения строк при разборе команд. Значение по умолчанию: `StringComparison.InvariantCultureIgnoreCase`;
+* `CommandVerbPrefix` - Префикс перед глаголом команды. В команде `/signal` префикс это символ `/`. Значение по умолчанию: `null`;
+* `CommandArgumentKeyPrefix` - Префикс перед ключом параметра команды. В команде `/signal -arg1 value` префикс это символ `-`. Значением по умолчанию `-`;
+* `CommandArgumentKeyValueDelimeter` - Разделитель между ключом и значением параметра команды, например `/signal arg:value`. Параметр является обязательным в случае, если для параметра `CommandArgumentKeyPrefix` задается значение `null`. Значение по умолчанию: `null` (эквивалентно символу пробела).
+
 ## Точки расширения
 `TODO`
