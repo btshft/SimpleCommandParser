@@ -1,7 +1,6 @@
 # Just another simple library 
 
-[![NuGet Downloads](https://img.shields.io/nuget/v/SimpleCommandParser.svg)]
-(https://www.nuget.org/packages/SimpleCommandParser/)
+[![NuGet](https://img.shields.io/nuget/v/SimpleCommandParser.svg)]
 
 Ещё одна библиотека, которая начинается с префикса Simple. А как их ещё называть?
 
