@@ -1,4 +1,4 @@
-# Just another simple library 
+# Ещё одна 'Simple' библиотека
 
 [![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/SimpleCommandParser.svg?style=flat-square)](https://www.nuget.org/packages/SimpleCommandParser/)
 
