@@ -43,12 +43,17 @@ CommandParser.Default.ParseCommands("one -arg1 abs -arg2 de", new [] { typeof(On
         .WhenNotParsed(err => HandleError(err));
 ```
 
-## Конфигураци
+## Конфигурация
 
 Конфигурация компонента доступна через метод `Configure` или через конструктор класса `CommandParser`.
 
 ```C#
-CommandParser.Default.Configure(MutableCommandParserSettings settings => UpdateCommandParserSettings(settings));
+CommandParser.Default.Configure(
+      MutableCommandParserSettings settings => ConfigureSettings(settings));
+```
+```C#
+var parser = new CommandParser(
+      MutableCommandParserSettings settings => ConfigureSettings(settings));
 ```
 
 ### Настройки
