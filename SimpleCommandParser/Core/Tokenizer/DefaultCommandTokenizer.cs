@@ -103,9 +103,10 @@ namespace SimpleCommandParser.Core.Tokenizer
                 .Select(arg => arg.Trim())
                 .ToArray();
 
-            var isSpaceSplit = Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace() &&
-                               Settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace();
-
+            var isCmdPrefixEmpty = Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace();
+            var isArgDelimeterEmpty = Settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace();
+           
+            var isSpaceSplit = (isCmdPrefixEmpty && isArgDelimeterEmpty) || (!isCmdPrefixEmpty && isArgDelimeterEmpty);
             if (isSpaceSplit)
             {
                 return commandQueryParts.Partition(size: 2)
@@ -212,8 +213,8 @@ namespace SimpleCommandParser.Core.Tokenizer
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
             
-            if (!settings.CommandArgumentKeyValueDelimeter.HasValue &&
-                !settings.CommandArgumentKeyPrefix.HasValue)
+            if (settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace() &&
+                settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace())
             {
                 throw new CommandParserException(
                     "Должен быть обязательно задан один из параметров настроек " +

@@ -32,30 +32,22 @@ namespace SimpleCommandParser.Tests
         [Theory]
         [InlineData("/", ':', '-')] // /command :arg-key
         [InlineData("/", ':', null)] // /command :arg key
-        [InlineData("/", ' ', null)] // /command arg key
         [InlineData("/", '/', null)] // /command /arg key
         [InlineData("/", null, '-')] // /command arg-key
-        [InlineData("/", null, ' ')] // /command arg key
         [InlineData("/", null, '/')] // /command arg/key
         [InlineData("", ':', '-')] // command :arg-key
         [InlineData("", ':', null)] // command :arg key
-        [InlineData("", ' ', null)] // command arg key
         [InlineData("", null, '-')] // command arg-key
-        [InlineData("", null, ' ')] // command arg key
         [InlineData("--", ':', '/')] // --command :arg/key
         [InlineData("--", ':', null)] // --command :arg key
-        [InlineData("--", ' ', null)] // --command arg key
         [InlineData("--", '/', null)] // --command /arg key
-        [InlineData("--", null, ' ')] // --command arg key
         [InlineData("--", null, '/')] // --command arg/key
         [InlineData("--", '-', '/')] // --command -arg/key
         [InlineData("--", '/', '-')] // --command /arg-key
         [InlineData("--", ' ', '-')] // --command arg-key
         [InlineData("--", '-', ' ')] // --command -arg key
         [InlineData("--", null, '-')] // --command arg-key
-        [InlineData("--", null, ' ')] // --command arg key
         [InlineData("--", '-', null)] // --command -arg key
-        [InlineData("--", ' ', null)] // --command arg key
         public void Tokenize_ValidInput_SingleArgument_Returns_ValidCommand(string verbPref, char? argPref,
             char? keyValueDelimeter)
         {
@@ -78,31 +70,24 @@ namespace SimpleCommandParser.Tests
         }
 
         [Theory]
-        [InlineData("/", ':', '-')]
-        [InlineData("/", ':', null)]
-        [InlineData("/", ' ', null)]
-        [InlineData("/", '/', null)]
-        [InlineData("/", null, '-')]
-        [InlineData("/", null, ' ')]
-        [InlineData("/", null, '/')]
-        [InlineData("", ':', '-')]
-        [InlineData("", ':', null)]
-        [InlineData("", ' ', null)]
-        [InlineData("", null, '-')]
-        [InlineData("", null, ' ')]
-        [InlineData("--", ':', '/')]
-        [InlineData("--", ':', null)]
-        [InlineData("--", ' ', null)]
-        [InlineData("--", '/', null)]
-        [InlineData("--", null, ' ')]
-        [InlineData("--", null, '/')]
-        [InlineData("--", '-', '/')]
-        [InlineData("--", '/', '-')]
-        [InlineData("--", ' ', '-')]
-        [InlineData("--", '-', ' ')]
-        [InlineData("--", null, '-')]
-        [InlineData("--", null, ' ')]
-        [InlineData("--", '-', null)]
+        [InlineData("/", ':', '-')] // /command :arg-key
+        [InlineData("/", ':', null)] // /command :arg key
+        [InlineData("/", '/', null)] // /command /arg key
+        [InlineData("/", null, '-')] // /command arg-key
+        [InlineData("/", null, '/')] // /command arg/key
+        [InlineData("", ':', '-')] // command :arg-key
+        [InlineData("", ':', null)] // command :arg key
+        [InlineData("", null, '-')] // command arg-key
+        [InlineData("--", ':', '/')] // --command :arg/key
+        [InlineData("--", ':', null)] // --command :arg key
+        [InlineData("--", '/', null)] // --command /arg key
+        [InlineData("--", null, '/')] // --command arg/key
+        [InlineData("--", '-', '/')] // --command -arg/key
+        [InlineData("--", '/', '-')] // --command /arg-key
+        [InlineData("--", ' ', '-')] // --command arg-key
+        [InlineData("--", '-', ' ')] // --command -arg key
+        [InlineData("--", null, '-')] // --command arg-key
+        [InlineData("--", '-', null)] // --command -arg key
         public void Tokenize_ValidInput_MultipleArg_Returns_ValidCommand(string verbPref, char? keyValueDelimeter,
             char? argPref)
         {
