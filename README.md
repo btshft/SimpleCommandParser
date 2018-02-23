@@ -33,8 +33,6 @@ var input = "create :name 'package name' :tag cool_package :hidden";
 CommandParser.Default.ParseCommand<CreatePackageCommand>(input)
         .WhenParsed(CreatePackageCommand command => DoSomething(command))
         .WhenNotParsed(err => HandleError(err));
-
-// 
 ```
 
 ### Разбор нескольких команд
