@@ -118,15 +118,38 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal :argument1 abc :argument2 cde :argument7";
+            var input = "signal :argument1 abc :argument2 cde :argument3 kk :argument7";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
             var parsedCommand = result as ParsedCommand<SingleCommandModel>;
             
             // Assert         
-            Assert.NotNull(parsedCommand);          
+            Assert.NotNull(parsedCommand);  
+            
+            Assert.Equal("abc", parsedCommand.Value.RequiredArg1);
+            Assert.Equal("cde", parsedCommand.Value.RequiredArg2);
+            Assert.Equal("kk", parsedCommand.Value.OptionalArg3);
             Assert.Equal(true, parsedCommand.Value.Option7);
+        }
+
+        [Fact]
+        public void ParseCommand_ValidInput_ValuesOnly()
+        {
+            // Arrange
+            var parser = CommandParser.Default.Configure(c => c.RequireArgumentKeyPrefix = false);
+            var input = "signal 'abc de' cde kk";
+            
+            // Act
+            var result = parser.ParseCommand<SingleCommandModel>(input);
+            var parsedCommand = result as ParsedCommand<SingleCommandModel>;
+            
+            // Assert         
+            Assert.NotNull(parsedCommand);   
+            
+            Assert.Equal("abc de", parsedCommand.Value.RequiredArg1);
+            Assert.Equal("cde", parsedCommand.Value.RequiredArg2);
+            Assert.Equal("kk", parsedCommand.Value.OptionalArg3);
         }
         
         [Fact]
@@ -165,7 +188,6 @@ namespace SimpleCommandParser.Tests
             Assert.NotNull(unparsedCommand);
         }
         
-
         [Fact]
         public void ParseCommand_InvalidArgument_MissingRequiredArgument_Returns_UnparsedCommand()
         {

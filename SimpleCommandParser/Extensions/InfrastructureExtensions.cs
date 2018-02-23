@@ -60,11 +60,6 @@ namespace SimpleCommandParser.Extensions
             return $"{escape}{source}{escape}";
         }
         
-        public static string Append(this string source, string append)
-        {
-            return source.Insert(source.Length, append);
-        }
-        
         public static string Prepend(this string source, string prepend)
         {
             return source.Insert(0, prepend);
@@ -73,17 +68,6 @@ namespace SimpleCommandParser.Extensions
         public static string[] SplitByWhiteSpace(this string source)
         {
             return source.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        public static string[] SplitRemoveEmpty(this string source, string split)
-        {
-            return source.Split(new[] {split}, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        public static string[] PrependSplit(this string source, string splitter, char? prepend)
-        {
-            source = prepend.HasValue ? source.Insert(0, prepend.Value.ToString()) : source;          
-            return source.Split(new[] { splitter }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

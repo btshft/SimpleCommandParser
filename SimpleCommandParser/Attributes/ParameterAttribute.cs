@@ -14,12 +14,6 @@ namespace SimpleCommandParser.Attributes
         public bool Required { get; set; }
         
         /// <summary>
-        /// Позиция значения параметра при вызове команды.
-        /// Используется при сокращенном вызове команды без указания наименований параметров.
-        /// </summary>
-        public int? Order { get; set; }
-
-        /// <summary>
         /// Инициализирует экземпляр <see cref="ParameterAttribute"/>.
         /// </summary>
         /// <param name="name">Наименование параметра.</param>
@@ -27,7 +21,6 @@ namespace SimpleCommandParser.Attributes
         public ParameterAttribute(string name, string longName) 
             : base(name, longName)
         {
-            Order = null;
             Required = true;
         }
         
@@ -38,7 +31,6 @@ namespace SimpleCommandParser.Attributes
         public ParameterAttribute(string name) 
             : base(name)
         {
-            Order = null;
             Required = true;
         }
     }
