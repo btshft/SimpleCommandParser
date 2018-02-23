@@ -1,8 +1,8 @@
-# Just another simple library 
+# Очередная  'Simple' библиотека
 
 [![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/SimpleCommandParser.svg?style=flat-square)](https://www.nuget.org/packages/SimpleCommandParser/)
 
-Ещё одна библиотека, которая начинается с префикса Simple. А как их ещё называть?
+Да, это ещё одна библиотека, которая начинается с префикса Simple. А как их ещё называть?
 
 ## Назначение
 Предоставляет механизм для разбора пользовательского ввода формата по типу команды в строготипизированную модель.
