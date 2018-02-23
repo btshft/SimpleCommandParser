@@ -12,18 +12,29 @@
 ### Разбор одной команды
 
 ```C#
-class MyCommand {
-      [Argument(key: "arg1")]
-      public string OptionOne { get; set; }
-
-      [Argument(key: "arg2", required: false)]
-      public string OptionTwo { get; set } 
+class CreatePackageCommand
+{ 
+      [Parameter("n", "name")]
+      public string Name { get; set; }
+      
+      [Parameter("t", "tag", Required = false)]
+      public string Tag { get; set; }
+      
+      [Option("h", "hidden")]
+      public bool IsHidden { get; set; }
 }
 
-CommandParser.Default.ParseCommand<MyCommand>("signal -arg1 abc -arg2 dv")
-        .WhenParsed(MyCommand command => DoSomething(command))
+var input = "create :n 'package name' :t cool_package :s :h"; 
+
+/*
+var input = "create :name 'package name' :tag cool_package :hidden";
+*/
+
+CommandParser.Default.ParseCommand<CreatePackageCommand>(input)
+        .WhenParsed(CreatePackageCommand command => DoSomething(command))
         .WhenNotParsed(err => HandleError(err));
 
+// 
 ```
 
 ### Разбор нескольких команд
@@ -31,13 +42,13 @@ CommandParser.Default.ParseCommand<MyCommand>("signal -arg1 abc -arg2 dv")
 При использовании дефолтного парсера атрибут `[Verb]` является обязательным. При этом имена команд должны быть уникальными.
 
 ```C#
-[Verb("one")]
-class OneCommand { ... }
+[Verb("create")]
+class CreatePackageCommand { ... }
 
-[Verb("two")]
-class TwoCommand { ... }
+[Verb("update")]
+class UpdatePackageCommand { ... }
 
-CommandParser.Default.ParseCommands("one -arg1 abs -arg2 de", new [] { typeof(OneCommand), typeof(TwoCommand) })
+CommandParser.Default.ParseCommands("update :name 'package' :new_name 'new package'", new [] { typeof(OneCommand), typeof(TwoCommand) })
         .WhenParsed<OneCommand>(c1 => HandleOne(c1))
         .WhenParsed<TwoCommand>(c2 => HandleTwo(c2))
         .WhenNotParsed(err => HandleError(err));
@@ -59,9 +70,8 @@ var parser = new CommandParser(
 ### Настройки
 
 * `StringComparsion` - Культура сравнения строк при разборе команд. Значение по умолчанию: `StringComparison.InvariantCultureIgnoreCase`;
-* `CommandVerbPrefix` - Префикс перед глаголом команды. В команде `/signal` префикс это символ `/`. Значение по умолчанию: `null`;
-* `CommandArgumentKeyPrefix` - Префикс перед ключом параметра команды. В команде `/signal -arg1 value` префикс это символ `-`. Значением по умолчанию `-`;
-* `CommandArgumentKeyValueDelimeter` - Разделитель между ключом и значением параметра команды, например `/signal arg:value`. Параметр является обязательным в случае, если для параметра `CommandArgumentKeyPrefix` задается значение `null`. Значение по умолчанию: `null` (эквивалентно символу пробела).
+* `VerbPrefix` - Префикс перед действием команды. В команде `/signal` префикс это символ `/`. Значение по умолчанию: `null`;
+* `ArgumentKeyPrefix` - Префикс перед ключом параметра команды. В команде `/signal :arg1 value` префикс это символ `:`. Значением по умолчанию `:`;
 
 ## Точки расширения
 `TODO`
