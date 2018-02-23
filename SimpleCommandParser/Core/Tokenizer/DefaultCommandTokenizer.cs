@@ -14,7 +14,12 @@ namespace SimpleCommandParser.Core.Tokenizer
     /// Реализация нетипизированного парсера команд.
     /// </summary>
     public class DefaultCommandTokenizer : ICommandTokenizer
-    {      
+    {
+        /// <summary>
+        /// Массив кавычек.
+        /// </summary>
+        protected readonly char[] Quotes = new[] {'\'', '\"' };
+              
         /// <summary>
         /// Регулярное выражение для нормализации строки.
         /// </summary>
@@ -62,11 +67,11 @@ namespace SimpleCommandParser.Core.Tokenizer
 
             foreach (var queryArgument in ExtractQueryArguments(commandQuery))
             {
-                if (!IsValidArgument(queryArgument, out var key, out var value))
+                if (!TrySeparateArgumentKeyValue(queryArgument, out var key, out var value))
                 {
                     errors.Add($"Параметр '{queryArgument}' имеет некорректный формат. " +
                                "Ожидаемый формат параметра команды " +
-                               $"'{Settings.CommandArgumentKeyPrefix}ключ{GetCommandArgumentKeyValueDelimeter()}значение'");
+                               $"'{Settings.ArgumentPrefix}ключ значение'");
                         
                     continue;
                 }
@@ -81,39 +86,39 @@ namespace SimpleCommandParser.Core.Tokenizer
         }
 
         /// <summary>
-        /// Параметры запроса вида {ключ}:{значение}.
+        /// Параметры запроса вида {префикс}{ключ} {значение}.
         /// </summary>
         /// <param name="commandQuery">Строка запроса.</param>
         /// <returns>Параметры запроса.</returns>
         protected virtual string[] ExtractQueryArguments(string commandQuery)
         {
-            var argumentKeyPrefix = Settings.CommandArgumentKeyPrefix;
-            var prenend = argumentKeyPrefix != ' ' ? ' ' : (char?)null;
-            var splitter = $" {argumentKeyPrefix}";
-            
-            var commandQueryParts = argumentKeyPrefix.HasValue
-                ? commandQuery
-                    .PrependSplit(splitter, prenend)
-                    .PreJoinWith(argumentKeyPrefix.Value)
-                    .ToArray()
-                : commandQuery
-                    .SplitByWhiteSpace();
-
-            commandQueryParts = commandQueryParts
-                .Select(arg => arg.Trim())
+            var commandQueryParts = commandQuery
+                .PreserveSplit(new[] { Settings.ArgumentPrefix })
+                .TrimAll()
                 .ToArray();
 
-            var isCmdPrefixEmpty = Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace();
-            var isArgDelimeterEmpty = Settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace();
-           
-            var isSpaceSplit = (isCmdPrefixEmpty && isArgDelimeterEmpty) || (!isCmdPrefixEmpty && isArgDelimeterEmpty);
-            if (isSpaceSplit)
+            // Если в запросе нет ключей, то значит там только параметры
+            if (commandQueryParts.Length < 2 && !commandQueryParts[0].StartsWith(
+                    Settings.ArgumentPrefix, Settings.StringComparsion))
             {
-                return commandQueryParts.Partition(size: 2)
-                    .FlattenJoin(GetCommandArgumentKeyValueDelimeter())
-                    .ToArray();
-            }
+                var parts = new List<string>();
 
+                while (!string.IsNullOrEmpty(commandQuery))
+                {
+                    var startQuote = Quotes.FirstOrDefault(q => commandQuery.StartsWith(q));
+
+                    var part = startQuote == default(char)
+                        ? string.Concat(commandQuery.TakeWhile(c => c != ' '))
+                        : string.Concat(commandQuery.Skip(1).TakeWhile(c => c != startQuote))
+                            .Escape(startQuote);
+                    
+                    parts.Add(part);
+                    commandQuery = commandQuery.Remove(0, part.Length).Trim();
+                }
+
+                commandQueryParts = parts.ToArray();
+            }
+            
             return commandQueryParts;
         }
 
@@ -129,14 +134,14 @@ namespace SimpleCommandParser.Core.Tokenizer
                 .SplitByWhiteSpace()
                 .FirstOrDefault();
             
-            if (!string.IsNullOrEmpty(Settings.CommandVerbPrefix))
+            if (!string.IsNullOrEmpty(Settings.VerbPrefix))
             {
-                if (!normalizedInput.StartsWith(Settings.CommandVerbPrefix, Settings.StringComparsion))
+                if (!normalizedInput.StartsWith(Settings.VerbPrefix, Settings.StringComparsion))
                 {
                     return false;
                 }
 
-                verb = verb?.Substring(Settings.CommandVerbPrefix.Length);
+                verb = verb?.Substring(Settings.VerbPrefix.Length);
             }
             
             return verb != null;
@@ -153,9 +158,9 @@ namespace SimpleCommandParser.Core.Tokenizer
         {
             query = null;
             
-            var queryOffsetIndex = (string.IsNullOrEmpty(Settings.CommandVerbPrefix))
+            var queryOffsetIndex = (string.IsNullOrEmpty(Settings.VerbPrefix))
                 ? verb.Length
-                : verb.Length + Settings.CommandVerbPrefix.Length;
+                : verb.Length + Settings.VerbPrefix.Length;
 
             if (normalizedInput.Length < queryOffsetIndex)
                 return false;
@@ -171,34 +176,33 @@ namespace SimpleCommandParser.Core.Tokenizer
         /// <param name="key">Ключ аргумента.</param>
         /// <param name="value">Значение.</param>
         /// <returns>Признак корректности аргумента.</returns>
-        protected virtual bool IsValidArgument(string argument, out string key, out string value)
+        protected virtual bool TrySeparateArgumentKeyValue(string argument, out string key, out string value)
         {
-            key = value = null;
+            key = value = string.Empty;
             
             if (string.IsNullOrWhiteSpace(argument))
-            {
                 return false;
+
+            if (argument.StartsWith(Settings.ArgumentPrefix, Settings.StringComparsion))
+            {
+                key = string
+                    .Concat(argument
+                        .Skip(Settings.ArgumentPrefix.Length)
+                        .TakeWhile(c => c != ' '));
+
+                argument = argument.Remove(0, key.Length + Settings.ArgumentPrefix.Length);
             }
 
-            var parts = argument
-                .SplitRemoveEmpty(GetCommandArgumentKeyValueDelimeter());
+            key = key.Trim(Quotes).Trim(' ');      
+            value = argument.Trim(' ');
 
-            if (parts.Length != 2)
-                return false;
-                
-            
-            key = parts[0];
-            value = parts[1];
-
-            if (!Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace())
+            if (value.StartsWith('\'') && value.EndsWith('\'') ||
+                value.StartsWith('\"') && value.EndsWith('\"'))
             {
-                // ReSharper disable once PossibleInvalidOperationException
-                if (!key.StartsWith(Settings.CommandArgumentKeyPrefix.Value))
-                    return false;
-
-                key = key.RemoveFirstChar();
+                value = value.Remove(0, 1);
+                value = value.Remove(value.Length - 1, 1);
             }
-            
+  
             return true;
         }
 
@@ -213,19 +217,12 @@ namespace SimpleCommandParser.Core.Tokenizer
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
             
-            if (settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace() &&
-                settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(settings.ArgumentPrefix))
             {
                 throw new CommandParserException(
-                    "Должен быть обязательно задан один из параметров настроек " +
-                    $"'{nameof(ICommandParserSettings.CommandArgumentKeyValueDelimeter)}' или " +
-                    $"'{nameof(ICommandParserSettings.CommandArgumentKeyPrefix)}'.");
+                    "Префикс команды должен быть задан и отличаться от пробела " +
+                    $"{nameof(ICommandParserSettings.ArgumentPrefix)}");
             }
-        }
-
-        private char GetCommandArgumentKeyValueDelimeter()
-        {
-            return Settings.CommandArgumentKeyValueDelimeter ?? ' ';
         }
     }
 }

@@ -1,26 +1,30 @@
-﻿using SimpleCommandParser.Attributes;
+﻿using System;
+using SimpleCommandParser.Attributes;
 
 namespace SimpleCommandParser.Tests.Models
 {
     public class SingleCommandModel
     {
-        [Argument("arg1")]
+        [Parameter("arg1", "argument1")]
         public string RequiredArg1 { get; set; }
         
-        [Argument("arg2")]
+        [Parameter("arg2", "argument2")]
         public string RequiredArg2 { get; set; }
         
-        [Argument("arg3", required: false)]
+        [Parameter("arg3", "argument3", Required = false)]
         public string OptionalArg3 { get; set; } 
         
-        [Argument("arg4", required: false)]
+        [Parameter("arg4", "argument4", Required =  false)]
         public int OptionalArg4 { get; set; }
         
-        [Argument("arg5", required: false)]
+        [Parameter("arg5", "argument5", Required = false)]
         public int OptionalArg5 { get; }
         
-        [Argument("arg6", required: false)]
-        public CustomType OptionalArg6 { get; }
+        [Parameter("arg6", "argument6", Required = false)]
+        public CustomType OptionalArg6 { get; set; }
+        
+        [Option("arg7", "argument7")]
+        public bool Option7 { get; set; }
     }
     
     public class CustomType { }
@@ -28,39 +32,39 @@ namespace SimpleCommandParser.Tests.Models
     [Verb("first")]
     public class FirstCommand
     {
-        [Argument("arg1")]
+        [Parameter("arg1")]
         public string RequiredArg1 { get; set; }
         
-        [Argument("arg2", required: false)]
+        [Parameter("arg2", Required = false)]
         public int OptionalArg2 { get; set; }
     }
     
     [Verb("second")]
     public class SecondCommand
     {
-        [Argument("arg1")]
+        [Parameter("arg1")]
         public string RequiredArg1 { get; set; }
         
-        [Argument("arg2", required: false)]
+        [Parameter("arg2", Required = false)]
         public int OptionalArg2 { get; set; }
     }
     
     [Verb("second")]
     public class SecondCommandDuplicate
     {
-        [Argument("arg1")]
+        [Parameter("arg1")]
         public string RequiredArg1 { get; set; }
         
-        [Argument("arg2", required: false)]
+        [Parameter("arg2", Required = false)]
         public int OptionalArg2 { get; set; }
     }
 
     public class VerbMissingCommand
     {
-        [Argument("arg1")]
+        [Parameter("arg1")]
         public string RequiredArg1 { get; set; }
         
-        [Argument("arg2", required: false)]
+        [Parameter("arg2", Required = false)]
         public int OptionalArg2 { get; set; }
     }
 }

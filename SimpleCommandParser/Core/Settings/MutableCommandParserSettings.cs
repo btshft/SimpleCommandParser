@@ -11,13 +11,10 @@ namespace SimpleCommandParser.Core.Settings
         public StringComparison StringComparsion { get; set; }
 
         /// <inheritdoc />
-        public string CommandVerbPrefix { get; set; }
+        public string VerbPrefix { get; set; }
 
         /// <inheritdoc />
-        public char? CommandArgumentKeyValueDelimeter { get; set; }
-
-        /// <inheritdoc />
-        public char? CommandArgumentKeyPrefix { get; set; }
+        public string ArgumentPrefix { get; set; }
 
         /// <summary>
         /// Инициализирует экземпляр <see cref="MutableCommandParserSettings"/>.
@@ -26,9 +23,8 @@ namespace SimpleCommandParser.Core.Settings
         internal MutableCommandParserSettings(ICommandParserSettings settings)
         {
             StringComparsion = settings.StringComparsion;
-            CommandVerbPrefix = settings.CommandVerbPrefix;
-            CommandArgumentKeyValueDelimeter = settings.CommandArgumentKeyValueDelimeter;
-            CommandArgumentKeyPrefix = settings.CommandArgumentKeyPrefix;
+            VerbPrefix = settings.VerbPrefix;
+            ArgumentPrefix = settings.ArgumentPrefix;
         }
         
         /// <summary>
@@ -43,7 +39,7 @@ namespace SimpleCommandParser.Core.Settings
             = new MutableCommandParserSettings
             {
                 StringComparsion = StringComparison.InvariantCultureIgnoreCase,
-                CommandArgumentKeyPrefix = '-'
+                ArgumentPrefix = ":"
             };
     }
 }

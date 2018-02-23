@@ -30,32 +30,25 @@ namespace SimpleCommandParser.Tests
     public class DefaultCommandTokenizerTests
     {
         [Theory]
-        [InlineData("/", ':', '-')] // /command :arg-key
-        [InlineData("/", ':', null)] // /command :arg key
-        [InlineData("/", '/', null)] // /command /arg key
-        [InlineData("/", null, '-')] // /command arg-key
-        [InlineData("/", null, '/')] // /command arg/key
-        [InlineData("", ':', '-')] // command :arg-key
-        [InlineData("", ':', null)] // command :arg key
-        [InlineData("", null, '-')] // command arg-key
-        [InlineData("--", ':', '/')] // --command :arg/key
-        [InlineData("--", ':', null)] // --command :arg key
-        [InlineData("--", '/', null)] // --command /arg key
-        [InlineData("--", null, '/')] // --command arg/key
-        [InlineData("--", '-', '/')] // --command -arg/key
-        [InlineData("--", '/', '-')] // --command /arg-key
-        [InlineData("--", ' ', '-')] // --command arg-key
-        [InlineData("--", '-', ' ')] // --command -arg key
-        [InlineData("--", null, '-')] // --command arg-key
-        [InlineData("--", '-', null)] // --command -arg key
-        public void Tokenize_ValidInput_SingleArgument_Returns_ValidCommand(string verbPref, char? argPref,
-            char? keyValueDelimeter)
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", "'", null)]
+        [InlineData("/", ":", "\"", null)]
+        [InlineData("/", ":", null, "\'")]
+        [InlineData("/", ":", null, "\"")]
+        [InlineData("/", ":", "\'", "\'")]
+        [InlineData("/", ":", "\"", "\"")]     
+        [InlineData("/", "/", null, null)]     
+        public void Tokenize_ValidInput_SingleArgument_Returns_ValidCommand(
+            string verbPrefix, 
+            string argumentPrefix, 
+            string keyEscape, 
+            string valueEscape)
         {
             // Arrange
-            var delimeter = keyValueDelimeter != null ? keyValueDelimeter : ' ';
-            var settings = CreateSettings(verbPref, keyValueDelimeter, argPref);
+            var settings = CreateSettings(verbPrefix, argumentPrefix);
             var tokenizer = new UnchangedTokenizer(settings);
-            var input = $"{verbPref}command {argPref}arg1{delimeter}value";
+            var input = $"{verbPrefix}command {argumentPrefix}{keyEscape}arg1{keyEscape} {valueEscape}value{valueEscape}";
 
             // Act
             var result = tokenizer.Tokenize(new ParseRequest(input));
@@ -70,32 +63,62 @@ namespace SimpleCommandParser.Tests
         }
 
         [Theory]
-        [InlineData("/", ':', '-')] // /command :arg-key
-        [InlineData("/", ':', null)] // /command :arg key
-        [InlineData("/", '/', null)] // /command /arg key
-        [InlineData("/", null, '-')] // /command arg-key
-        [InlineData("/", null, '/')] // /command arg/key
-        [InlineData("", ':', '-')] // command :arg-key
-        [InlineData("", ':', null)] // command :arg key
-        [InlineData("", null, '-')] // command arg-key
-        [InlineData("--", ':', '/')] // --command :arg/key
-        [InlineData("--", ':', null)] // --command :arg key
-        [InlineData("--", '/', null)] // --command /arg key
-        [InlineData("--", null, '/')] // --command arg/key
-        [InlineData("--", '-', '/')] // --command -arg/key
-        [InlineData("--", '/', '-')] // --command /arg-key
-        [InlineData("--", ' ', '-')] // --command arg-key
-        [InlineData("--", '-', ' ')] // --command -arg key
-        [InlineData("--", null, '-')] // --command arg-key
-        [InlineData("--", '-', null)] // --command -arg key
-        public void Tokenize_ValidInput_MultipleArg_Returns_ValidCommand(string verbPref, char? keyValueDelimeter,
-            char? argPref)
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", "'", null)]
+        [InlineData("/", ":", "\"", null)]
+        [InlineData("/", ":", null, "\'")]
+        [InlineData("/", ":", null, "\"")]
+        [InlineData("/", ":", "\'", "\'")]
+        [InlineData("/", ":", "\"", "\"")]     
+        [InlineData("/", "/", null, null)] 
+        public void Tokenize_ValidInputWithQuotes_SingleArgument_Returns_ValidCommand(
+            string verbPrefix,
+            string argumentPrefix,
+            string keyEscape,
+            string valueEscape)
         {
             // Arrange
-            var delimeter = keyValueDelimeter != null ? keyValueDelimeter : ' ';
-            var settings = CreateSettings(verbPref, keyValueDelimeter, argPref);
+            var settings = CreateSettings(verbPrefix, argumentPrefix);
             var tokenizer = new UnchangedTokenizer(settings);
-            var input = $"{verbPref}command {argPref}oneArg{delimeter}one {argPref}twoArg{delimeter}two";
+            var input = $"{verbPrefix}command {argumentPrefix}{keyEscape}arg1{keyEscape} {valueEscape}some 'quoted'{valueEscape}";
+
+            // Act
+            var result = tokenizer.Tokenize(new ParseRequest(input));
+
+            // Assert
+
+            Assert.True(result.IsSucceed);
+            Assert.Equal("command", result.Result.Verb);
+            Assert.Equal(1, result.Result.Arguments.Count);
+            Assert.Equal("arg1", result.Result.Arguments.First().Key);
+            Assert.Equal("some 'quoted\'", result.Result.Arguments.First().Value);
+        }
+        
+
+        [Theory]
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", null, null)]
+        [InlineData("/", ":", "'", null)]
+        [InlineData("/", ":", "\"", null)]
+        [InlineData("/", ":", null, "\'")]
+        [InlineData("/", ":", null, "\"")]
+        [InlineData("/", ":", "\'", "\'")]
+        [InlineData("/", ":", "\"", "\"")]     
+        [InlineData("/", "/", null, null)]  
+        public void Tokenize_ValidInput_MultipleArg_Returns_ValidCommand(
+            string verbPrefix,
+            string argumentPrefix,
+            string keyEscape,
+            string valueEscape)
+        {
+            // Arrange
+            var settings = CreateSettings(verbPrefix, argumentPrefix);
+            var tokenizer = new UnchangedTokenizer(settings);
+            
+            var input = $"{verbPrefix}command " +
+                        $"{argumentPrefix}{keyEscape}oneArg{keyEscape} {valueEscape}one{valueEscape} " +
+                        $"{argumentPrefix}{keyEscape}twoArg{keyEscape} {valueEscape}two{valueEscape}";
 
             // Act
             var result = tokenizer.Tokenize(new ParseRequest(input));
@@ -113,13 +136,69 @@ namespace SimpleCommandParser.Tests
             Assert.Equal("two", result.Result.Arguments.ElementAt(1).Value);
         }
 
-        private MutableCommandParserSettings CreateSettings(string verbPref, char? keyValueDelimeter, char? argPref)
+        [Theory]
+        [InlineData("/", ":")]
+        [InlineData("/", "/")]
+        
+        public void Tokenize_ValidInput_OnlyValues_Returns_ValidCommand(string verbPrefix, string argumentPrefix)
+        {
+            // Arrange
+            var settings = CreateSettings(verbPrefix, argumentPrefix);
+            var tokenizer = new UnchangedTokenizer(settings);
+            var input = $"{verbPrefix}command one two";
+
+            // Act
+            var result = tokenizer.Tokenize(new ParseRequest(input));
+
+            // Assert
+
+            Assert.True(result.IsSucceed);
+            Assert.Equal("command", result.Result.Verb);
+            Assert.Equal(2, result.Result.Arguments.Count);
+
+            Assert.Equal(string.Empty, result.Result.Arguments.First().Key);
+            Assert.Equal("one", result.Result.Arguments.First().Value);
+
+            Assert.Equal(string.Empty, result.Result.Arguments.ElementAt(1).Key);
+            Assert.Equal("two", result.Result.Arguments.ElementAt(1).Value);
+        }
+        
+        [Theory]
+        [InlineData("/", ":")]
+        [InlineData("/", "/")]
+        public void Tokenize_ValidInput_OnlyValuesWithSpaced_Returns_ValidCommand(string verbPrefix, string argumentPrefix)
+        {
+            // Arrange
+            var settings = CreateSettings(verbPrefix, argumentPrefix);
+            var tokenizer = new UnchangedTokenizer(settings);
+            var input = $"{verbPrefix}command    ' one \"one\" one '     two   ' three '";
+
+            // Act
+            var result = tokenizer.Tokenize(new ParseRequest(input));
+
+            // Assert
+
+            Assert.True(result.IsSucceed);
+            Assert.Equal("command", result.Result.Verb);
+            Assert.Equal(3, result.Result.Arguments.Count);
+
+            Assert.Equal(string.Empty, result.Result.Arguments.First().Key);
+            Assert.Equal(" one \"one\" one ", result.Result.Arguments.First().Value);
+
+            Assert.Equal(string.Empty, result.Result.Arguments.ElementAt(1).Key);
+            Assert.Equal("two", result.Result.Arguments.ElementAt(1).Value);       
+            
+            Assert.Equal(string.Empty, result.Result.Arguments.ElementAt(2).Key);
+            Assert.Equal(" three ", result.Result.Arguments.ElementAt(2).Value);
+        }
+
+
+        private MutableCommandParserSettings CreateSettings(string verbPref, string argumentPrefix)
         {
             return new MutableCommandParserSettings
             {
-                CommandVerbPrefix = verbPref,
-                CommandArgumentKeyPrefix = argPref,
-                CommandArgumentKeyValueDelimeter = keyValueDelimeter
+                VerbPrefix = verbPref,
+                ArgumentPrefix = argumentPrefix
             };
         }
     }

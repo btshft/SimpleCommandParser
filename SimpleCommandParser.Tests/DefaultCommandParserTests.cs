@@ -18,7 +18,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 cde";
+            var input = "signal :arg1 abc :arg2 cde";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -33,7 +33,7 @@ namespace SimpleCommandParser.Tests
         {       
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 cde";
+            var input = "signal :arg1 abc :arg2 cde";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -51,7 +51,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 cde -arg3 kkk";
+            var input = "signal :arg1 abc :arg2 cde :arg3 kkk";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -68,7 +68,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 cde";
+            var input = "signal :arg1 abc :arg2 cde";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -85,7 +85,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 cde -arg4 199";
+            var input = "signal :arg1 abc :arg2 cde :arg4 199";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -95,6 +95,38 @@ namespace SimpleCommandParser.Tests
             Assert.NotNull(parsedCommand);
             
             Assert.Equal(199, parsedCommand.Value.OptionalArg4);
+        }
+        
+        [Fact]
+        public void ParseCommand_ValidInput_OptionSetted()
+        {
+            // Arrange
+            var parser = CommandParser.Default;
+            var input = "signal :arg1 abc :arg2 cde :arg7";
+            
+            // Act
+            var result = parser.ParseCommand<SingleCommandModel>(input);
+            var parsedCommand = result as ParsedCommand<SingleCommandModel>;
+            
+            // Assert         
+            Assert.NotNull(parsedCommand);          
+            Assert.Equal(true, parsedCommand.Value.Option7);
+        }
+        
+        [Fact]
+        public void ParseCommand_ValidInput_LongArgNames()
+        {
+            // Arrange
+            var parser = CommandParser.Default;
+            var input = "signal :argument1 abc :argument2 cde :argument7";
+            
+            // Act
+            var result = parser.ParseCommand<SingleCommandModel>(input);
+            var parsedCommand = result as ParsedCommand<SingleCommandModel>;
+            
+            // Assert         
+            Assert.NotNull(parsedCommand);          
+            Assert.Equal(true, parsedCommand.Value.Option7);
         }
         
         [Fact]
@@ -119,12 +151,11 @@ namespace SimpleCommandParser.Tests
             var parser = new CommandParser(s =>
             {
                 s.StringComparsion = StringComparison.InvariantCultureIgnoreCase;
-                s.CommandArgumentKeyPrefix = '-';
-                s.CommandArgumentKeyValueDelimeter = null;
-                s.CommandVerbPrefix = "/";
+                s.ArgumentPrefix = ":";
+                s.VerbPrefix = "/";
             });
             
-            var input = "signal -arg1 abc -arg2 cde";
+            var input = "signal :arg1 abc :arg2 cde";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -134,27 +165,13 @@ namespace SimpleCommandParser.Tests
             Assert.NotNull(unparsedCommand);
         }
         
-        [Fact]
-        public void ParseCommand_InvalidInput_ArgumentsMismatch_Returns_UnparsedCommand()
-        {
-            // Arrange
-            var parser = CommandParser.Default;
-            var input = "signal -arg1 kd -arg2 ab ab dc -arg3";
-            
-            // Act
-            var result = parser.ParseCommand<SingleCommandModel>(input);
-            var unparsedCommand = result as UnparsedCommand<SingleCommandModel>;
-            
-            // Assert         
-            Assert.NotNull(unparsedCommand);
-        }
 
         [Fact]
         public void ParseCommand_InvalidArgument_MissingRequiredArgument_Returns_UnparsedCommand()
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 kd -arg2 ab ab dc -arg3";
+            var input = "signal :arg1 kd :arg2";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -169,7 +186,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 a -arg5 cde";
+            var input = "signal :arg1 abc :arg2 a :arg5 cde";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -185,7 +202,7 @@ namespace SimpleCommandParser.Tests
             // Arrange
             var parser = CommandParser.Default;
             
-            var input = "signal -arg1 abc -arg2 ddd -arg6 hhh";
+            var input = "signal :arg1 abc :arg2 ddd :arg6 hhh";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -200,7 +217,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "signal -arg1 abc -arg2 ddd -arg5 72.2";
+            var input = "signal :arg1 abc :arg2 ddd :arg5 72.2";
             
             // Act
             var result = parser.ParseCommand<SingleCommandModel>(input);
@@ -219,7 +236,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new [] { typeof(FirstCommand) });
@@ -235,7 +252,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new[] { typeof(FirstCommand), typeof(SecondCommand) });
@@ -251,7 +268,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "second -arg1 abc -arg2 10";
+            var input = "second :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new [] { typeof(FirstCommand), typeof(SecondCommand) });
@@ -268,7 +285,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new [] { typeof(FirstCommand), typeof(SecondCommand) });
@@ -283,7 +300,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new [] { typeof(FirstCommand), typeof(SecondCommand), typeof(SecondCommandDuplicate) });
@@ -298,7 +315,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             // Act
             var result = parser.ParseCommands(input, new [] { typeof(FirstCommand), typeof(VerbMissingCommand) });
@@ -317,7 +334,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             
@@ -335,7 +352,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isFirstCommandHandlerCalledTwice = false;
@@ -359,7 +376,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isFirstCommandHandlerCalledTwice = false;
@@ -383,7 +400,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             // Act
             var result = parser
@@ -401,7 +418,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             // Act
             var result = parser
@@ -420,7 +437,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isSecondCommandHandlerCalled = false;
@@ -441,7 +458,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isSecondCommandHandlerCalled = false;
@@ -465,7 +482,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "unknown -arg1 abc -arg2 10";
+            var input = "unknown :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isErrorHandlerCalled = false;
@@ -489,7 +506,7 @@ namespace SimpleCommandParser.Tests
         {
             // Arrange
             var parser = CommandParser.Default;
-            var input = "first -arg1 abc -arg2 10";
+            var input = "first :arg1 abc :arg2 10";
             
             var isFirstCommandHandlerCalled = false;
             var isErrorHandlerCalled = false;

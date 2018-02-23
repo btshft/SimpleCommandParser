@@ -31,7 +31,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
             Settings = settings;
             _untypedCommandCreatorProvider = new Lazy<ICommandTokenizer>(() => new DefaultCommandTokenizer(settings));
             _typeResolverProvider = new Lazy<ICommandModelTypeResolver>(() => new VerbAttributeBasedCommandModelTypeResolver(settings));
-            _modelInitializerProvider = new Lazy<ICommandInitializer>(() => new ArgumentAttributeBasedCommandInitializer(settings));
+            _modelInitializerProvider = new Lazy<ICommandInitializer>(() => new ParameterAttributeBasedCommandInitializer(settings));
         }
 
         /// <inheritdoc />
@@ -118,7 +118,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
                 return new ParsedCommand<object>(initializationResult.InitializedCommand);
                 
             }
-            catch (CommandParserException _)
+            catch (CommandParserException)
             {
                 throw;
             }

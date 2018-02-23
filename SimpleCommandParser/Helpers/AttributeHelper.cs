@@ -10,29 +10,10 @@ namespace SimpleCommandParser.Helpers
     /// </summary>
     internal static class AttributeHelper
     {
-        public static Type FirstTypeWithAttribute<TAttribute>(Type[] types) 
+        public static IEnumerable<Type> AllTypesWithAttribute<TAttribute>(IEnumerable<Type> types)
             where TAttribute : Attribute
         {
-            if (types == null || types.Length == 0)
-                throw new ArgumentNullException(nameof(types));
-
-            return types.FirstOrDefault(t => t.IsDefined(typeof(TAttribute), inherit: false));
-        }
-        
-        public static Type FirstTypeWithAttribute<TAttribute>(Type[] types, Func<TAttribute, bool> predicate)
-            where TAttribute : Attribute
-        {
-            var type = types.FirstOrDefault(t => t.GetCustomAttribute<TAttribute>() != null);
-            if (type == null)
-                return null;
-            
-            return predicate(type.GetCustomAttribute<TAttribute>()) ? type : null;
-        }
-
-        public static IEnumerable<Type> AllTypesWithAttribute<TAttribute>(Type[] types)
-            where TAttribute : Attribute
-        {
-            if (types == null || types.Length == 0)
+            if (types == null)
                 throw new ArgumentNullException(nameof(types));
             
             return types.Where(t => t.IsDefined(typeof(TAttribute), inherit: false));
@@ -48,6 +29,13 @@ namespace SimpleCommandParser.Helpers
                 .Select(t => new {Type = t, Attribute = t.GetCustomAttribute<TAttribute>()})
                 .Where(p => p.Attribute != null && predicate(p.Attribute))
                 .Select(p => p.Type);
+        }
+        
+        public static IEnumerable<Type> AllTypesWithAttributes<T1, T2>(Type[] types)
+            where T1 : Attribute
+            where T2 : Attribute
+        {
+            return AllTypesWithAttribute<T1>(types).Concat(AllTypesWithAttribute<T2>(types));
         }
         
         public static IEnumerable<Type> AllTypesWithoutAttribute<TAttribute>(Type[] types)

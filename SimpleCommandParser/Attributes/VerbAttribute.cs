@@ -3,20 +3,20 @@
 namespace SimpleCommandParser.Attributes
 {
     /// <summary>
-    /// Атрибут глагола команды.
+    /// Атрибут действия команды.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class VerbAttribute : Attribute
     {
         /// <summary>
-        /// Глагол команды.
+        /// Действие команды.
         /// </summary>
         public string Verb { get; }
 
         /// <summary>
-        /// Инициализирует атрибут глагола команды.
+        /// Инициализирует атрибут действия команды.
         /// </summary>
-        /// <param name="verb">Глагол команды.</param>
+        /// <param name="verb">Действие команды.</param>
         public VerbAttribute(string verb)
         {
             if (string.IsNullOrWhiteSpace(verb))

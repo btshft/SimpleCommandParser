@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleCommandParser.Core.Tokenizer
 {
@@ -17,6 +18,16 @@ namespace SimpleCommandParser.Core.Tokenizer
         /// Параметры.
         /// </summary>
         public IReadOnlyCollection<ArgumentToken> Arguments { get; }
+
+        /// <summary>
+        /// Признак наличия параметров.
+        /// </summary>
+        public bool HasArguments => Arguments.Count > 0;
+
+        /// <summary>
+        /// Признак того, что в параметрах заданы только ключи.
+        /// </summary>
+        public bool HasOnlyArgumentValues => Arguments.All(a => string.IsNullOrEmpty(a.Key));
         
         /// <summary>
         /// Инициализирует экземпляр <see cref="TokenizedCommand"/>.
@@ -45,15 +56,17 @@ namespace SimpleCommandParser.Core.Tokenizer
             public string Value { get; }
 
             /// <summary>
+            /// Признак того, что аргумент - опция.
+            /// </summary>
+            public bool IsOption => string.IsNullOrEmpty(Value) && !string.IsNullOrEmpty(Key);
+            
+            /// <summary>
             /// Инициализирует экземпляр <see cref="ArgumentToken"/>.
             /// </summary>
             /// <param name="key">Ключ.</param>
             /// <param name="value">Значение.</param>
             public ArgumentToken(string key, string value)
             {
-                if (string.IsNullOrEmpty(key))
-                    throw new ArgumentNullException(nameof(key));
-                
                 Key = key;
                 Value = value;
             }

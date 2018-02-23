@@ -15,17 +15,11 @@ namespace SimpleCommandParser.Core.Settings
         /// <summary>
         /// Префикс команды.
         /// </summary>
-        string CommandVerbPrefix { get; }
+        string VerbPrefix { get; }
         
         /// <summary>
-        /// Разделитель между ключом параметра и его значением.
-        /// Если не задано, используется пробел.
+        /// Префикс параметра команды.
         /// </summary>
-        char? CommandArgumentKeyValueDelimeter { get; }
-        
-        /// <summary>
-        /// Префикс ключа команды.
-        /// </summary>
-        char? CommandArgumentKeyPrefix { get;  }
+        string ArgumentPrefix { get; }
     }
 }
