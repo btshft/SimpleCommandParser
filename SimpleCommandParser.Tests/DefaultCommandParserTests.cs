@@ -134,10 +134,10 @@ namespace SimpleCommandParser.Tests
         }
 
         [Fact]
-        public void ParseCommand_ValidInput_ValuesOnly()
+        public void ParseCommand_ValidInput_ValuesOnly_RequireArgumentKeyPrefix_Off()
         {
             // Arrange
-            var parser = CommandParser.Default.Configure(c => c.RequireArgumentKeyPrefix = false);
+            var parser = new CommandParser(c => c.RequireArgumentKeyPrefix = false);
             var input = "signal 'abc de' cde kk";
             
             // Act
@@ -150,6 +150,21 @@ namespace SimpleCommandParser.Tests
             Assert.Equal("abc de", parsedCommand.Value.RequiredArg1);
             Assert.Equal("cde", parsedCommand.Value.RequiredArg2);
             Assert.Equal("kk", parsedCommand.Value.OptionalArg3);
+        }
+        
+        [Fact]
+        public void ParseCommand_ValidInput_ValuesOnly_RequireArgumentKeyPrefix_On()
+        {
+            // Arrange
+            var parser = CommandParser.Default;
+            var input = "signal 'abc de' cde kk";
+            
+            // Act
+            var result = parser.ParseCommand<SingleCommandModel>(input);
+            var parsedCommand = result as UnparsedCommand<SingleCommandModel>;
+            
+            // Assert         
+            Assert.NotNull(parsedCommand);
         }
         
         [Fact]

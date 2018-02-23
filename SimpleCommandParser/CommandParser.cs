@@ -12,6 +12,11 @@ namespace SimpleCommandParser
     public class CommandParser : ICommandParser
     {
         /// <summary>
+        /// Признак того, что парсер был инициализирован.
+        /// </summary>
+        public bool IsConfigured { get; }
+        
+        /// <summary>
         /// Парсер с настройками по умолчанию.
         /// </summary>
         public static CommandParser Default { get; } = new CommandParser(MutableCommandParserSettings.DefaultSettings);
@@ -37,6 +42,17 @@ namespace SimpleCommandParser
 
             Settings = settings;
             ParseStrategy = new DefaultCommandParseStrategy(Settings);
+            IsConfigured = true;
+        }
+
+        /// <summary>
+        /// Инициализирует не инициализированный экземпляр <see cref="CommandParser"/> с настройками по умолчанию.
+        /// </summary>
+        public CommandParser()
+        {
+            IsConfigured = false;      
+            Settings = new MutableCommandParserSettings(MutableCommandParserSettings.DefaultSettings);
+            ParseStrategy = new DefaultCommandParseStrategy(Settings);
         }
         
         /// <summary>
@@ -45,6 +61,7 @@ namespace SimpleCommandParser
         /// <param name="settings">Настройки.</param>
         internal CommandParser(MutableCommandParserSettings settings)
         {
+            IsConfigured = false;
             Settings = settings;
             ParseStrategy = new DefaultCommandParseStrategy(Settings);
         }
@@ -83,6 +100,9 @@ namespace SimpleCommandParser
         /// <param name="settings">Обработчик настроек.</param>
         public CommandParser Configure(Action<MutableCommandParserSettings> settings)
         {
+            if (IsConfigured)
+                throw new CommandParserException("Компонент уже был инициализирован ранее");
+            
             settings((MutableCommandParserSettings)Settings);
             return this;
         }
