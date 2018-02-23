@@ -14,7 +14,7 @@ namespace SimpleCommandParser.Core.Settings
         public string VerbPrefix { get; set; }
 
         /// <inheritdoc />
-        public string ArgumentPrefix { get; set; }
+        public string ArgumentKeyPrefix { get; set; }
 
         /// <summary>
         /// Инициализирует экземпляр <see cref="MutableCommandParserSettings"/>.
@@ -24,7 +24,7 @@ namespace SimpleCommandParser.Core.Settings
         {
             StringComparsion = settings.StringComparsion;
             VerbPrefix = settings.VerbPrefix;
-            ArgumentPrefix = settings.ArgumentPrefix;
+            ArgumentKeyPrefix = settings.ArgumentKeyPrefix;
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace SimpleCommandParser.Core.Settings
             = new MutableCommandParserSettings
             {
                 StringComparsion = StringComparison.InvariantCultureIgnoreCase,
-                ArgumentPrefix = ":"
+                ArgumentKeyPrefix = ":"
             };
     }
 }

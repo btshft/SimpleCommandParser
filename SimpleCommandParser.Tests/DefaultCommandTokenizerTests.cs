@@ -198,7 +198,7 @@ namespace SimpleCommandParser.Tests
             return new MutableCommandParserSettings
             {
                 VerbPrefix = verbPref,
-                ArgumentPrefix = argumentPrefix
+                ArgumentKeyPrefix = argumentPrefix
             };
         }
     }

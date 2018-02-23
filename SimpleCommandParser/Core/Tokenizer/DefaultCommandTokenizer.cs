@@ -71,7 +71,7 @@ namespace SimpleCommandParser.Core.Tokenizer
                 {
                     errors.Add($"Параметр '{queryArgument}' имеет некорректный формат. " +
                                "Ожидаемый формат параметра команды " +
-                               $"'{Settings.ArgumentPrefix}ключ значение'");
+                               $"'{Settings.ArgumentKeyPrefix}ключ значение'");
                         
                     continue;
                 }
@@ -93,13 +93,13 @@ namespace SimpleCommandParser.Core.Tokenizer
         protected virtual string[] ExtractQueryArguments(string commandQuery)
         {
             var commandQueryParts = commandQuery
-                .PreserveSplit(new[] { Settings.ArgumentPrefix })
+                .PreserveSplit(new[] { Settings.ArgumentKeyPrefix })
                 .TrimAll()
                 .ToArray();
 
             // Если в запросе нет ключей, то значит там только параметры
             if (commandQueryParts.Length < 2 && !commandQueryParts[0].StartsWith(
-                    Settings.ArgumentPrefix, Settings.StringComparsion))
+                    Settings.ArgumentKeyPrefix, Settings.StringComparsion))
             {
                 var parts = new List<string>();
 
@@ -183,14 +183,14 @@ namespace SimpleCommandParser.Core.Tokenizer
             if (string.IsNullOrWhiteSpace(argument))
                 return false;
 
-            if (argument.StartsWith(Settings.ArgumentPrefix, Settings.StringComparsion))
+            if (argument.StartsWith(Settings.ArgumentKeyPrefix, Settings.StringComparsion))
             {
                 key = string
                     .Concat(argument
-                        .Skip(Settings.ArgumentPrefix.Length)
+                        .Skip(Settings.ArgumentKeyPrefix.Length)
                         .TakeWhile(c => c != ' '));
 
-                argument = argument.Remove(0, key.Length + Settings.ArgumentPrefix.Length);
+                argument = argument.Remove(0, key.Length + Settings.ArgumentKeyPrefix.Length);
             }
 
             key = key.Trim(Quotes).Trim(' ');      
@@ -217,11 +217,11 @@ namespace SimpleCommandParser.Core.Tokenizer
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
             
-            if (string.IsNullOrWhiteSpace(settings.ArgumentPrefix))
+            if (string.IsNullOrWhiteSpace(settings.ArgumentKeyPrefix))
             {
                 throw new CommandParserException(
                     "Префикс команды должен быть задан и отличаться от пробела " +
-                    $"{nameof(ICommandParserSettings.ArgumentPrefix)}");
+                    $"{nameof(ICommandParserSettings.ArgumentKeyPrefix)}");
             }
         }
     }

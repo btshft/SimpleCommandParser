@@ -25,7 +25,7 @@ namespace SimpleCommandParser.Extensions
             {
                 callback(pc.Value);
                 return finalConsumer
-                    ? new ConsumedParsedCommand<TResult>(commandParseResult)
+                    ? new ConsumedCommand<TResult>(commandParseResult)
                     : commandParseResult;
             }
 
@@ -47,7 +47,7 @@ namespace SimpleCommandParser.Extensions
             {
                 callback(result);
                 return finalConsumer
-                    ? new ConsumedParsedCommand<object>(commandParseResult)
+                    ? new ConsumedCommand<object>(commandParseResult)
                     : commandParseResult;
             }
 
@@ -70,7 +70,7 @@ namespace SimpleCommandParser.Extensions
             {
                 callback(uc.Errors);
                 return finalConsumer
-                    ? new ConsumedParsedCommand<TResult>(commandParseResult)
+                    ? new ConsumedCommand<TResult>(commandParseResult)
                     : commandParseResult;
             }
 

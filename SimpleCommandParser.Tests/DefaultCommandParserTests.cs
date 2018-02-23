@@ -151,7 +151,7 @@ namespace SimpleCommandParser.Tests
             var parser = new CommandParser(s =>
             {
                 s.StringComparsion = StringComparison.InvariantCultureIgnoreCase;
-                s.ArgumentPrefix = ":";
+                s.ArgumentKeyPrefix = ":";
                 s.VerbPrefix = "/";
             });
             
@@ -410,7 +410,7 @@ namespace SimpleCommandParser.Tests
             
             
             // Assert
-            Assert.Equal(typeof(ConsumedParsedCommand<object>), result.GetType());
+            Assert.Equal(typeof(ConsumedCommand<object>), result.GetType());
         }
 
         [Fact]
@@ -428,7 +428,7 @@ namespace SimpleCommandParser.Tests
             
             
             // Assert
-            Assert.NotEqual(typeof(ConsumedParsedCommand<object>), result.GetType());
+            Assert.NotEqual(typeof(ConsumedCommand<object>), result.GetType());
             Assert.Equal(typeof(ParsedCommand<object>), result.GetType());
         }
 

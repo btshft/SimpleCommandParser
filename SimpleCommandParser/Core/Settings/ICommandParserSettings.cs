@@ -18,8 +18,8 @@ namespace SimpleCommandParser.Core.Settings
         string VerbPrefix { get; }
         
         /// <summary>
-        /// Префикс параметра команды.
+        /// Префикс перед ключом параметра команды.
         /// </summary>
-        string ArgumentPrefix { get; }
+        string ArgumentKeyPrefix { get; }
     }
 }
