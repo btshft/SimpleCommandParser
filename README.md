@@ -48,7 +48,7 @@ class CreatePackageCommand { ... }
 [Verb("update")]
 class UpdatePackageCommand { ... }
 
-CommandParser.Default.ParseCommands("update :name 'package' :new_name 'new package'", new [] { typeof(OneCommand), typeof(TwoCommand) })
+CommandParser.Default.ParseCommands("update :name 'package' :new_name 'new package'", new [] { typeof(CreatePackageCommand), typeof(UpdatePackageCommand) })
         .WhenParsed<OneCommand>(c1 => HandleOne(c1))
         .WhenParsed<TwoCommand>(c2 => HandleTwo(c2))
         .WhenNotParsed(err => HandleError(err));
