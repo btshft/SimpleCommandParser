@@ -6,6 +6,7 @@ using SimpleCommandParser.Core.Command;
 using SimpleCommandParser.Core.Settings;
 using SimpleCommandParser.Core.StageResults;
 using SimpleCommandParser.Exceptions;
+using SimpleCommandParser.Extensions;
 
 namespace SimpleCommandParser.Core.Tokenizer
 {
@@ -24,6 +25,10 @@ namespace SimpleCommandParser.Core.Tokenizer
         /// </summary>
         protected ICommandParserSettings Settings { get; }
 
+        /// <summary>
+        /// Инициалиризует новый экземпляр <see cref="DefaultCommandTokenizer"/>.
+        /// </summary>
+        /// <param name="settings">Настройки.</param>
         protected internal DefaultCommandTokenizer(ICommandParserSettings settings)
         {           
             Settings = settings;
@@ -82,23 +87,29 @@ namespace SimpleCommandParser.Core.Tokenizer
         /// <returns>Параметры запроса.</returns>
         protected virtual string[] ExtractQueryArguments(string commandQuery)
         {
-            var commandQueryParts = Settings.CommandArgumentKeyPrefix.HasValue
+            var argumentKeyPrefix = Settings.CommandArgumentKeyPrefix;
+            var prenend = argumentKeyPrefix != ' ' ? ' ' : (char?)null;
+            var splitter = $" {argumentKeyPrefix}";
+            
+            var commandQueryParts = argumentKeyPrefix.HasValue
                 ? commandQuery
-                    .Insert(0, " ")
-                    .Split(new []{$" {Settings.CommandArgumentKeyPrefix.Value}"}, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(str => $"{Settings.CommandArgumentKeyPrefix.Value}{str}")
+                    .PrependSplit(splitter, prenend)
+                    .PreJoinWith(argumentKeyPrefix.Value)
                     .ToArray()
                 : commandQuery
-                    .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    .SplitByWhiteSpace();
 
             commandQueryParts = commandQueryParts
                 .Select(arg => arg.Trim())
                 .ToArray();
-            
-            if (Settings.CommandArgumentKeyValueDelimeter == ' ' && !Settings.CommandArgumentKeyPrefix.HasValue)
+
+            var isSpaceSplit = Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace() &&
+                               Settings.CommandArgumentKeyValueDelimeter.IsNullOrWhiteSpace();
+
+            if (isSpaceSplit)
             {
-                return JoinQueryArgumentParts(commandQueryParts)
-                    .Select(p => string.Join(GetCommandArgumentKeyValueDelimeter(), p))
+                return commandQueryParts.Partition(size: 2)
+                    .FlattenJoin(GetCommandArgumentKeyValueDelimeter())
                     .ToArray();
             }
 
@@ -114,7 +125,7 @@ namespace SimpleCommandParser.Core.Tokenizer
         protected virtual bool TryExtractCommandVerb(string normalizedInput, out string verb)
         {    
             verb = normalizedInput
-                .Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)
+                .SplitByWhiteSpace()
                 .FirstOrDefault();
             
             if (!string.IsNullOrEmpty(Settings.CommandVerbPrefix))
@@ -168,8 +179,8 @@ namespace SimpleCommandParser.Core.Tokenizer
                 return false;
             }
 
-            var parts = argument.Split(GetCommandArgumentKeyValueDelimeter(),
-                StringSplitOptions.RemoveEmptyEntries);
+            var parts = argument
+                .SplitRemoveEmpty(GetCommandArgumentKeyValueDelimeter());
 
             if (parts.Length != 2)
                 return false;
@@ -178,12 +189,13 @@ namespace SimpleCommandParser.Core.Tokenizer
             key = parts[0];
             value = parts[1];
 
-            if (Settings.CommandArgumentKeyPrefix.HasValue)
+            if (!Settings.CommandArgumentKeyPrefix.IsNullOrWhiteSpace())
             {
+                // ReSharper disable once PossibleInvalidOperationException
                 if (!key.StartsWith(Settings.CommandArgumentKeyPrefix.Value))
                     return false;
 
-                key = key.Remove(0, 1);
+                key = key.RemoveFirstChar();
             }
             
             return true;
@@ -213,15 +225,6 @@ namespace SimpleCommandParser.Core.Tokenizer
         private char GetCommandArgumentKeyValueDelimeter()
         {
             return Settings.CommandArgumentKeyValueDelimeter ?? ' ';
-        }
-        
-        private static IEnumerable<string[]> JoinQueryArgumentParts(IReadOnlyCollection<string> parts)
-        {
-            const int size = 2;
-            for (var i = 0; i < (float)parts.Count / size; i++)
-            {
-                yield return parts.Skip(i * size).Take(size).ToArray();
-            }
         }
     }
 }

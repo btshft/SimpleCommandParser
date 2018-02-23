@@ -13,7 +13,7 @@ namespace SimpleCommandParser.Tests
         {
         }
     }
-    
+
     public class ParseRequest : ICommandParseRequest
     {
         public ParseRequest(string input)
@@ -30,35 +30,46 @@ namespace SimpleCommandParser.Tests
     public class DefaultCommandTokenizerTests
     {
         [Theory]
-        [InlineData("/", null, '-')]
-        [InlineData("/", ':', null)]
-        [InlineData("/", ':', '-')]
-        [InlineData("/", null, '-')]
-        
-        [InlineData("", null, '/')]
-        [InlineData("", ':', null)]
-        [InlineData("", ':', '/')]
-        [InlineData("", null, '/')]
-        
-        [InlineData("--", null, '/')]
-        [InlineData("--", ':', null)]
-        [InlineData("--", ':', '/')]
-        [InlineData("--", null, '/')]
-        [InlineData("--", '-', null)]
-        [InlineData("--", null, '-')]
-        public void Tokenize_ValidInput_SingleArgument_Returns_ValidCommand(string verbPref, char? keyValueDelimeter, char? argPref)
+        [InlineData("/", ':', '-')] // /command :arg-key
+        [InlineData("/", ':', null)] // /command :arg key
+        [InlineData("/", ' ', null)] // /command arg key
+        [InlineData("/", '/', null)] // /command /arg key
+        [InlineData("/", null, '-')] // /command arg-key
+        [InlineData("/", null, ' ')] // /command arg key
+        [InlineData("/", null, '/')] // /command arg/key
+        [InlineData("", ':', '-')] // command :arg-key
+        [InlineData("", ':', null)] // command :arg key
+        [InlineData("", ' ', null)] // command arg key
+        [InlineData("", null, '-')] // command arg-key
+        [InlineData("", null, ' ')] // command arg key
+        [InlineData("--", ':', '/')] // --command :arg/key
+        [InlineData("--", ':', null)] // --command :arg key
+        [InlineData("--", ' ', null)] // --command arg key
+        [InlineData("--", '/', null)] // --command /arg key
+        [InlineData("--", null, ' ')] // --command arg key
+        [InlineData("--", null, '/')] // --command arg/key
+        [InlineData("--", '-', '/')] // --command -arg/key
+        [InlineData("--", '/', '-')] // --command /arg-key
+        [InlineData("--", ' ', '-')] // --command arg-key
+        [InlineData("--", '-', ' ')] // --command -arg key
+        [InlineData("--", null, '-')] // --command arg-key
+        [InlineData("--", null, ' ')] // --command arg key
+        [InlineData("--", '-', null)] // --command -arg key
+        [InlineData("--", ' ', null)] // --command arg key
+        public void Tokenize_ValidInput_SingleArgument_Returns_ValidCommand(string verbPref, char? argPref,
+            char? keyValueDelimeter)
         {
             // Arrange
             var delimeter = keyValueDelimeter != null ? keyValueDelimeter : ' ';
             var settings = CreateSettings(verbPref, keyValueDelimeter, argPref);
             var tokenizer = new UnchangedTokenizer(settings);
             var input = $"{verbPref}command {argPref}arg1{delimeter}value";
-      
+
             // Act
             var result = tokenizer.Tokenize(new ParseRequest(input));
 
             // Assert
-            
+
             Assert.True(result.IsSucceed);
             Assert.Equal("command", result.Result.Verb);
             Assert.Equal(1, result.Result.Arguments.Count);
@@ -67,22 +78,31 @@ namespace SimpleCommandParser.Tests
         }
 
         [Theory]
-        [InlineData("/", null, '-')]
-        [InlineData("/", ':', null)]
         [InlineData("/", ':', '-')]
+        [InlineData("/", ':', null)]
+        [InlineData("/", ' ', null)]
+        [InlineData("/", '/', null)]
         [InlineData("/", null, '-')]
-        
-        [InlineData("", null, '/')]
+        [InlineData("/", null, ' ')]
+        [InlineData("/", null, '/')]
+        [InlineData("", ':', '-')]
         [InlineData("", ':', null)]
-        [InlineData("", ':', '/')]
-        [InlineData("", null, '/')]
-        
-        [InlineData("--", null, '/')]
-        [InlineData("--", ':', null)]
+        [InlineData("", ' ', null)]
+        [InlineData("", null, '-')]
+        [InlineData("", null, ' ')]
         [InlineData("--", ':', '/')]
+        [InlineData("--", ':', null)]
+        [InlineData("--", ' ', null)]
+        [InlineData("--", '/', null)]
+        [InlineData("--", null, ' ')]
         [InlineData("--", null, '/')]
-        [InlineData("--", '-', null)]
+        [InlineData("--", '-', '/')]
+        [InlineData("--", '/', '-')]
+        [InlineData("--", ' ', '-')]
+        [InlineData("--", '-', ' ')]
         [InlineData("--", null, '-')]
+        [InlineData("--", null, ' ')]
+        [InlineData("--", '-', null)]
         public void Tokenize_ValidInput_MultipleArg_Returns_ValidCommand(string verbPref, char? keyValueDelimeter,
             char? argPref)
         {
@@ -91,19 +111,19 @@ namespace SimpleCommandParser.Tests
             var settings = CreateSettings(verbPref, keyValueDelimeter, argPref);
             var tokenizer = new UnchangedTokenizer(settings);
             var input = $"{verbPref}command {argPref}oneArg{delimeter}one {argPref}twoArg{delimeter}two";
-      
+
             // Act
             var result = tokenizer.Tokenize(new ParseRequest(input));
 
             // Assert
-            
+
             Assert.True(result.IsSucceed);
             Assert.Equal("command", result.Result.Verb);
             Assert.Equal(2, result.Result.Arguments.Count);
-            
+
             Assert.Equal("oneArg", result.Result.Arguments.First().Key);
             Assert.Equal("one", result.Result.Arguments.First().Value);
-                        
+
             Assert.Equal("twoArg", result.Result.Arguments.ElementAt(1).Key);
             Assert.Equal("two", result.Result.Arguments.ElementAt(1).Value);
         }
