@@ -47,7 +47,7 @@ namespace SimpleCommandParser.Core.Command
         /// Инициализиуер экземпляр <see cref="ConsumedCommand{TModel}"/>.
         /// </summary>
         /// <param name="original">Оригинальная команда.</param>
-        protected internal ConsumedCommand(ICommandParseResult<TModel> original)
+        internal ConsumedCommand(ICommandParseResult<TModel> original)
             :base(CommandParseState.Consumed)
         {
             Original = original;

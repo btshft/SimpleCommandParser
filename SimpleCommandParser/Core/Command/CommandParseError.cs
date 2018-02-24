@@ -36,7 +36,7 @@
         /// </summary>
         /// <param name="text">Текст ошибки.</param>
         /// <param name="code">Код ошибки.</param>
-        internal CommandParseError(string text, CommandParseErrorCode code)
+        public CommandParseError(string text, CommandParseErrorCode code)
         {
             Text = text;
             Code = code;
@@ -47,7 +47,7 @@
         /// </summary>
         /// <param name="text">Текст ошибки.</param>
         /// <param name="code">Код ошибки.</param>
-        internal CommandParseError(string text, CommandParseErrorCode? code)
+        public CommandParseError(string text, CommandParseErrorCode? code)
         {
             Text = text;
             Code = code ?? CommandParseErrorCode.Undefined;
