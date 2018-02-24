@@ -110,7 +110,7 @@ namespace SimpleCommandParser.Core.Tokenizer
 
                 while (!string.IsNullOrEmpty(commandQuery))
                 {
-                    var startQuote = Quotes.FirstOrDefault(q => commandQuery.StartsWith(q));
+                    var startQuote = Quotes.FirstOrDefault(q => commandQuery.StartsWith(q.ToString()));
 
                     var part = startQuote == default(char)
                         ? string.Concat(commandQuery.TakeWhile(c => c != ' '))
@@ -201,8 +201,8 @@ namespace SimpleCommandParser.Core.Tokenizer
             key = key.Trim(Quotes).Trim(' ');      
             value = argument.Trim(' ');
 
-            if (value.StartsWith('\'') && value.EndsWith('\'') ||
-                value.StartsWith('\"') && value.EndsWith('\"'))
+            if (value.StartsWith("\'") && value.EndsWith("\'") ||
+                value.StartsWith("\"") && value.EndsWith("\""))
             {
                 value = value.Remove(0, 1);
                 value = value.Remove(value.Length - 1, 1);

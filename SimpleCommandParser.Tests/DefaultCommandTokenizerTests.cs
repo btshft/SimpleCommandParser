@@ -31,7 +31,6 @@ namespace SimpleCommandParser.Tests
     {
         [Theory]
         [InlineData("/", ":", null, null)]
-        [InlineData("/", ":", null, null)]
         [InlineData("/", ":", "'", null)]
         [InlineData("/", ":", "\"", null)]
         [InlineData("/", ":", null, "\'")]
@@ -63,7 +62,6 @@ namespace SimpleCommandParser.Tests
         }
 
         [Theory]
-        [InlineData("/", ":", null, null)]
         [InlineData("/", ":", null, null)]
         [InlineData("/", ":", "'", null)]
         [InlineData("/", ":", "\"", null)]

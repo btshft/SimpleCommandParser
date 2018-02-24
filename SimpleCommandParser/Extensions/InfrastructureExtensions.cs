@@ -6,13 +6,14 @@ namespace SimpleCommandParser.Extensions
 {
     internal static class InfrastructureExtensions
     {
+
         public static string[] PreserveSplit(this string source, string[] splitters)
         {
             for (var i = 0; i < splitters.Length - 1; i++)
             {
                 var splitter = splitters[i];
                 var parts = source
-                    .Split(splitter, StringSplitOptions.RemoveEmptyEntries);
+                    .Split(new[] { splitter }, StringSplitOptions.RemoveEmptyEntries);
 
                 parts = parts.Length == 1 && parts[0] == source
                     ? parts
@@ -23,7 +24,7 @@ namespace SimpleCommandParser.Extensions
             
             var lastSplitter = splitters[splitters.Length - 1];
             var lastParts = source
-                .Split(lastSplitter, StringSplitOptions.RemoveEmptyEntries);
+                .Split(new[] { lastSplitter }, StringSplitOptions.RemoveEmptyEntries);
             
             lastParts = lastParts.Length == 1 && lastParts[0] == source
                 ? lastParts
@@ -35,24 +36,6 @@ namespace SimpleCommandParser.Extensions
         public static IEnumerable<string> TrimAll(this IEnumerable<string> source)
         {
             return source.Select(c => c.Trim());
-        }
-        
-        public static IEnumerable<string> FlattenJoin(this IEnumerable<IEnumerable<string>> source, char joiner)
-        {
-            return source.Select(i => string.Join(joiner, i));
-        }
-
-        public static IEnumerable<string> PreJoinWith(this IEnumerable<string> source, char prepend)
-        {
-            return source.Select(s => $"{prepend}{s}");
-        }
-        
-        public static IEnumerable<IEnumerable<T>> Partition<T>(this IReadOnlyCollection<T> source, int size)
-        {
-            for (var i = 0; i < (float)source.Count / size; i++)
-            {
-                yield return source.Skip(i * size).Take(size);
-            }
         }
 
         public static string Escape(this string source, char escape)
