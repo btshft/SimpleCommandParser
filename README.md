@@ -81,7 +81,7 @@ var parser = new CommandParser(
 2. Компонент для инициализации экземпляра модели команды. Его обязанность перенести полученные токены на свойства экземпляра модели. В библиотеке представлен интерфейсом `ICommandInitializer` и стандартной реализацией `ParameterAttributeBasedCommandInitializer`;
 3. Компонент для определения типа модели на основе разобранной на токены команды. Используется при вызове `CommandParser.ParseCommands`. В библиотеке представлен интерфейсом `ICommandTypeResolver` и стандартной реализацией `VerbAttributeBasedCommandTypeResolver`.
 
-Замену компонентов парсера на свои можно произвести используя `CommandParserBuilder`. Пример представлен ниже
+Замену компонентов парсера на свои можно произвести используя `CommandParserBuilder`.
 ``` C#
 
 var builder = new CommandParserBuilder();
@@ -94,6 +94,4 @@ var parser = builder.
 
 var command = parser.ParseCommand<Sample>("...");
 ```
-Примеры замены компонентов билдера представлены в файле `Examples.cs` проекта `SimpleCommandParser.Examples`.
-
-> gl hf gh gf
+Подробные примеры замены компонентов билдера представлены в файле `Examples.cs` проекта `SimpleCommandParser.Examples`.
