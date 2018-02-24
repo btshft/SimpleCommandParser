@@ -3,6 +3,7 @@
 [![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/SimpleCommandParser.svg?style=flat-square)](https://www.nuget.org/packages/SimpleCommandParser/)
 
 Да, это ещё одна библиотека, которая начинается с префикса Simple. А как их ещё называть?
+>Поддерживаемые платформы .NET 4.5 и .NET CORE 2.0
 
 ## Назначение
 Предоставляет механизм для разбора пользовательского ввода формата по типу команды в строготипизированную модель.
