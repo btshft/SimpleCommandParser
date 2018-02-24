@@ -1,4 +1,6 @@
-﻿namespace SimpleCommandParser.Core.Command
+﻿using System;
+
+namespace SimpleCommandParser.Core.Command
 {
     /// <summary>
     /// Модель результата успешной обработки команды.
@@ -18,8 +20,11 @@
         /// Инициализирует экземпляр <see cref="ParsedCommand{TModel}"/>.
         /// </summary>
         /// <param name="value">Модель команды.</param>
-        internal ParsedCommand(TModel value)
+        public ParsedCommand(TModel value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+            
             Value = value;
             ParseState = CommandParseState.Parsed;
         }

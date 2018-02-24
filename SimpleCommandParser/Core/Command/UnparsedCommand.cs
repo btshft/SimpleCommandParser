@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace SimpleCommandParser.Core.Command
 {
@@ -20,7 +21,7 @@ namespace SimpleCommandParser.Core.Command
         /// Инициализирует экземпляр <see cref="UnparsedCommand{TModel}"/>.
         /// </summary>
         /// <param name="errors">Перечень ошибок.</param>
-        internal UnparsedCommand(IEnumerable<CommandParseError> errors)
+        public UnparsedCommand(IEnumerable<CommandParseError> errors)
             : base(CommandParseState.Unparsed)
         {
             Errors = errors?.ToArray() ?? Array.Empty<CommandParseError>();
@@ -30,9 +31,12 @@ namespace SimpleCommandParser.Core.Command
         /// Инициализирует экземпляр <see cref="UnparsedCommand{TModel}"/>.
         /// </summary>
         /// <param name="error">Код ошибки.</param>
-        internal UnparsedCommand(CommandParseError error)
+        public UnparsedCommand(CommandParseError error)
             : base(CommandParseState.Unparsed)
         {
+            if (error == null)
+                throw new ArgumentNullException(nameof(error));
+            
             Errors = new[] { error };
         }
     }

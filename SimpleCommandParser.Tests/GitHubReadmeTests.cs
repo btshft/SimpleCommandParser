@@ -19,16 +19,14 @@ namespace SimpleCommandParser.Tests
             // Act
             var consumed = CommandParser.Default.ParseCommand<CreatePackageCommand>(input)
                 .WhenParsed(c => isHandlerCalled = true) as ConsumedCommand<CreatePackageCommand>;
-
-            var package = consumed.Original as ParsedCommand<CreatePackageCommand>;
-            
+  
             // Assert
             Assert.True(isHandlerCalled);
-            Assert.NotNull(package);
+            Assert.NotNull(consumed);
             
-            Assert.Equal("package name", package.Value.Name);
-            Assert.Equal("cool_package", package.Value.Tag);
-            Assert.True(package.Value.IsHidden);
+            Assert.Equal("package name", consumed.Value.Name);
+            Assert.Equal("cool_package", consumed.Value.Tag);
+            Assert.True(consumed.Value.IsHidden);
         }
         
         [Fact]
@@ -42,15 +40,13 @@ namespace SimpleCommandParser.Tests
             var consumed = CommandParser.Default.ParseCommand<CreatePackageCommand>(input)
                 .WhenParsed(c => isHandlerCalled = true) as ConsumedCommand<CreatePackageCommand>;
 
-            var package = consumed.Original as ParsedCommand<CreatePackageCommand>;
-            
             // Assert
             Assert.True(isHandlerCalled);
-            Assert.NotNull(package);
+            Assert.NotNull(consumed);
             
-            Assert.Equal("package name", package.Value.Name);
-            Assert.Equal("cool_package", package.Value.Tag);
-            Assert.True(package.Value.IsHidden);
+            Assert.Equal("package name", consumed.Value.Name);
+            Assert.Equal("cool_package", consumed.Value.Tag);
+            Assert.True(consumed.Value.IsHidden);
         }
         
         internal class CreatePackageCommand
