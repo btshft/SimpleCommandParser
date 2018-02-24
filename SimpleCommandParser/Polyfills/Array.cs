@@ -8,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace System
 {
+    internal static class ArrayHelper<T>
+    {
+        public static readonly T[] Empty = new T[0];
+    }
+
     internal class Array
     {
         public static T[] Empty<T>()
         {
-            return new T[0];
+            return ArrayHelper<T>.Empty;
         }
     }
 }
