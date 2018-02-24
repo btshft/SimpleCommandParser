@@ -12,24 +12,29 @@ namespace SimpleCommandParser
     public class CommandParser : ICommandParser
     {
         /// <summary>
-        /// Признак того, что парсер был инициализирован.
-        /// </summary>
-        public bool IsConfigured { get; }
-        
-        /// <summary>
         /// Парсер с настройками по умолчанию.
         /// </summary>
         public static CommandParser Default { get; } = new CommandParser(MutableCommandParserSettings.DefaultSettings);
-
+        
+        /// <summary>
+        /// Признак того, что парсер был инициализирован.
+        /// </summary>
+        public bool IsConfigured { get; protected set; }
+        
         /// <summary>
         /// Настройки
         /// </summary>
-        public ICommandParserSettings Settings { get; }
+        public ICommandParserSettings Settings => SettingsProvider();
 
         /// <summary>
         /// Стратегия разбора пакета.
         /// </summary>
-        public ICommandParseStrategy ParseStrategy { get; }
+        protected ICommandParseStrategy ParseStrategy { get; set; }
+        
+        /// <summary>
+        /// Провайдер настроек.
+        /// </summary>
+        protected Func<ICommandParserSettings> SettingsProvider { get; set; }
         
         /// <summary>
         /// Инициализирует экземпляр <see cref="CommandParser"/>.
@@ -40,8 +45,8 @@ namespace SimpleCommandParser
             var settings = new MutableCommandParserSettings(MutableCommandParserSettings.DefaultSettings);     
             configuration(settings);
 
-            Settings = settings;
-            ParseStrategy = new DefaultCommandParseStrategy(Settings);
+            SettingsProvider = () => settings;
+            ParseStrategy = new DefaultCommandParseStrategy(SettingsProvider);
             IsConfigured = true;
         }
 
@@ -49,10 +54,12 @@ namespace SimpleCommandParser
         /// Инициализирует не инициализированный экземпляр <see cref="CommandParser"/> с настройками по умолчанию.
         /// </summary>
         public CommandParser()
-        {
-            IsConfigured = false;      
-            Settings = new MutableCommandParserSettings(MutableCommandParserSettings.DefaultSettings);
-            ParseStrategy = new DefaultCommandParseStrategy(Settings);
+        {     
+            var settings = new MutableCommandParserSettings(MutableCommandParserSettings.DefaultSettings);
+
+            SettingsProvider = () => settings;
+            ParseStrategy = new DefaultCommandParseStrategy(SettingsProvider);
+            IsConfigured = false;
         }
         
         /// <summary>
@@ -61,11 +68,27 @@ namespace SimpleCommandParser
         /// <param name="settings">Настройки.</param>
         internal CommandParser(MutableCommandParserSettings settings)
         {
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+            
+            SettingsProvider = () => settings;
+            ParseStrategy = new DefaultCommandParseStrategy(SettingsProvider);
             IsConfigured = false;
-            Settings = settings;
-            ParseStrategy = new DefaultCommandParseStrategy(Settings);
         }
 
+        /// <summary>
+        /// Инициализирует новый экезмпляр <see cref="CommandParser"/>.
+        /// Конструктор для билдера.
+        /// </summary>
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        /// <param name="parseStrategy"></param>
+        internal CommandParser(Func<MutableCommandParserSettings> settingsProvider, ICommandParseStrategy parseStrategy)
+        {
+            SettingsProvider = settingsProvider;
+            ParseStrategy = parseStrategy;
+            IsConfigured = true; // Инициализация через билдер
+        }
+        
         /// <inheritdoc />
         public ICommandParseResult<TModel> ParseCommand<TModel>(string input) where TModel : class, new()
         {

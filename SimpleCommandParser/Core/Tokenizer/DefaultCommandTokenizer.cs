@@ -26,17 +26,22 @@ namespace SimpleCommandParser.Core.Tokenizer
         protected Regex StringNormalizationRegex { get; set; }
         
         /// <summary>
-        /// Провайдер настроек парсера.
+        /// Настройки парсера.
         /// </summary>
-        protected ICommandParserSettings Settings { get; }
+        protected Func<ICommandParserSettings> SettingsProvider { get; set; }
 
         /// <summary>
-        /// Инициалиризует новый экземпляр <see cref="DefaultCommandTokenizer"/>.
+        /// Настройки.
         /// </summary>
-        /// <param name="settings">Настройки.</param>
-        protected internal DefaultCommandTokenizer(ICommandParserSettings settings)
-        {           
-            Settings = settings;
+        protected ICommandParserSettings Settings => SettingsProvider();
+        
+        /// <summary>
+        /// Иницализирует экземпляр <see cref="DefaultCommandTokenizer"/>.
+        /// </summary>
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        public DefaultCommandTokenizer(Func<ICommandParserSettings> settingsProvider)
+        {
+            SettingsProvider = settingsProvider;
             StringNormalizationRegex = new Regex(@"\s+", RegexOptions.Compiled);
         }
 

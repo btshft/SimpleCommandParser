@@ -9,7 +9,7 @@ namespace SimpleCommandParser.Tests
 {
     public class UnchangedTokenizer : DefaultCommandTokenizer
     {
-        public UnchangedTokenizer(ICommandParserSettings settings) : base(settings)
+        public UnchangedTokenizer(ICommandParserSettings settings) : base(() => settings)
         {
         }
     }

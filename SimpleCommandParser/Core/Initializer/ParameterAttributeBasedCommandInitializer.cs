@@ -19,15 +19,20 @@ namespace SimpleCommandParser.Core.Initializer
         /// <summary>
         /// Настройки парсера.
         /// </summary>
-        protected ICommandParserSettings Settings { get; }
+        protected Func<ICommandParserSettings> SettingsProvider { get; set; }
 
+        /// <summary>
+        /// Настройки.
+        /// </summary>
+        protected ICommandParserSettings Settings => SettingsProvider();
+        
         /// <summary>
         /// Иницализирует экземпляр <see cref="ParameterAttributeBasedCommandInitializer"/>.
         /// </summary>
-        /// <param name="settings">Настройки.</param>
-        protected internal ParameterAttributeBasedCommandInitializer(ICommandParserSettings settings)
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        public ParameterAttributeBasedCommandInitializer(Func<ICommandParserSettings> settingsProvider)
         {
-            Settings = settings;
+            SettingsProvider = settingsProvider;
         }
 
         /// <inheritdoc />

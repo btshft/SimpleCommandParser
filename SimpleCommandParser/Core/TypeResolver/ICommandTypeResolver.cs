@@ -7,7 +7,7 @@ namespace SimpleCommandParser.Core.TypeResolver
     /// <summary>
     /// Провайдер типа модели.
     /// </summary>
-    public interface ICommandModelTypeResolver
+    public interface ICommandTypeResolver
     {
         /// <summary>
         /// Выполняет определение типа модели для инициализации.

@@ -12,20 +12,25 @@ namespace SimpleCommandParser.Core.TypeResolver
     /// <summary>
     /// Резолвер типа на основе атрибута <see cref="VerbAttribute"/>.
     /// </summary>
-    public class VerbAttributeBasedCommandModelTypeResolver : ICommandModelTypeResolver
+    public class VerbAttributeBasedCommandTypeResolver : ICommandTypeResolver
     {
         /// <summary>
         /// Настройки парсера.
         /// </summary>
-        protected ICommandParserSettings Settings { get; }
+        protected Func<ICommandParserSettings> SettingsProvider { get; set; }
 
         /// <summary>
-        /// Инициализирует экземпляр <see cref="VerbAttributeBasedCommandModelTypeResolver"/>.
+        /// Настройки.
         /// </summary>
-        /// <param name="settings">Настройки.</param>
-        protected internal VerbAttributeBasedCommandModelTypeResolver(ICommandParserSettings settings)
+        protected ICommandParserSettings Settings => SettingsProvider();
+        
+        /// <summary>
+        /// Иницализирует экземпляр <see cref="VerbAttributeBasedCommandTypeResolver"/>.
+        /// </summary>
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        public VerbAttributeBasedCommandTypeResolver(Func<ICommandParserSettings> settingsProvider)
         {
-            Settings = settings;
+            SettingsProvider = settingsProvider;
         }
 
         /// <inheritdoc />

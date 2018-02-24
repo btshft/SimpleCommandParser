@@ -13,34 +13,91 @@ namespace SimpleCommandParser.Core.ParseStrategy
     /// </summary>
     public class DefaultCommandParseStrategy : ICommandParseStrategy
     {
-        private readonly Lazy<ICommandTokenizer> _untypedCommandCreatorProvider;
-        private readonly Lazy<ICommandModelTypeResolver> _typeResolverProvider;
-        private readonly Lazy<ICommandInitializer> _modelInitializerProvider;
+        internal class Defaults
+        {
+            /// <summary>
+            /// Провайдер токенизатора команды.
+            /// </summary>
+            public Lazy<ICommandTokenizer> TokenizerContainer { get; }
+        
+            /// <summary>
+            /// Провайдер инициализатора команды.
+            /// </summary>
+            public Lazy<ICommandInitializer> InitializerContainer { get; }
+        
+            /// <summary>
+            /// Провайдер определителя типа команды.
+            /// </summary>
+            public Lazy<ICommandTypeResolver> TypeResolverContainer { get;  }
+
+            public Defaults(Func<ICommandParserSettings> settingsProvider)
+            {
+                TokenizerContainer = new Lazy<ICommandTokenizer>(() => new DefaultCommandTokenizer(settingsProvider));
+                InitializerContainer = new Lazy<ICommandInitializer>(() => new ParameterAttributeBasedCommandInitializer(settingsProvider));
+                TypeResolverContainer = new Lazy<ICommandTypeResolver>(() => new VerbAttributeBasedCommandTypeResolver(settingsProvider));
+            }
+        }
         
         /// <summary>
-        /// Настройки парсера.
+        /// Провайдер настроек.
         /// </summary>
-        protected ICommandParserSettings Settings { get; }
+        protected Func<ICommandParserSettings> SettingsProvider { get; set; }
         
+        /// <summary>
+        /// Провайдер токенизатора команды.
+        /// </summary>
+        protected Func<ICommandTokenizer> TokenizerProvider { get; set; }
+        
+        /// <summary>
+        /// Провайдер инициализатора команды.
+        /// </summary>
+        protected Func<ICommandInitializer> InitializerProvider { get; set; }
+        
+        /// <summary>
+        /// Провайдер определителя типа команды.
+        /// </summary>
+        protected Func<ICommandTypeResolver> TypeResolverProvider { get; set; }
+            
         /// <summary>
         /// Инициализирует экземпляр <see cref="DefaultCommandParseStrategy"/>.
         /// </summary>
-        /// <param name="settings">Провайдер настроек.</param>
-        protected internal DefaultCommandParseStrategy(ICommandParserSettings settings)
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        /// <param name="tokenizerProvider">Провайдер токенизатора.</param>
+        /// <param name="initializerProvider">Провайдер инициализатора.</param>
+        /// <param name="typeResolverProvider">Резолвер типа команды.</param>
+        protected internal DefaultCommandParseStrategy(
+            Func<ICommandParserSettings> settingsProvider,
+            Func<ICommandTokenizer> tokenizerProvider,
+            Func<ICommandInitializer> initializerProvider,
+            Func<ICommandTypeResolver> typeResolverProvider)
         {
-            Settings = settings;
-            _untypedCommandCreatorProvider = new Lazy<ICommandTokenizer>(() => new DefaultCommandTokenizer(settings));
-            _typeResolverProvider = new Lazy<ICommandModelTypeResolver>(() => new VerbAttributeBasedCommandModelTypeResolver(settings));
-            _modelInitializerProvider = new Lazy<ICommandInitializer>(() => new ParameterAttributeBasedCommandInitializer(settings));
+            SettingsProvider = settingsProvider;
+            TokenizerProvider = tokenizerProvider;
+            InitializerProvider = initializerProvider;
+            TypeResolverProvider = typeResolverProvider;
         }
 
+        /// <summary>
+        /// Конструктор используемый при инициализации парсера по умолчанию.
+        /// </summary>
+        /// <param name="settingsProvider">Провайдер настроек.</param>
+        protected internal DefaultCommandParseStrategy(Func<ICommandParserSettings> settingsProvider)
+        {
+            var defaults = new Defaults(settingsProvider);
+            
+            SettingsProvider = settingsProvider;
+            TokenizerProvider = () => defaults.TokenizerContainer.Value;
+            InitializerProvider = () => defaults.InitializerContainer.Value;
+            TypeResolverProvider = () => defaults.TypeResolverContainer.Value;
+        }
+        
         /// <inheritdoc />
         public virtual ICommandParseResult<TModel> ParseCommand<TModel>(SingleCommandParseRequest<TModel> request)
             where TModel : class, new()
         {
             try
             {
-                var untypedCommandCreator = CreateTokenizer(request);
+                var untypedCommandCreator = TokenizerProvider();
                 if (untypedCommandCreator == null)
                     throw new CommandParserException($"Не удалось получить парсер команд для запроса {request}");
                 
@@ -54,7 +111,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
                 var initializationRequest = new CommandInitializationRequest(
                     typeof(TModel), new TModel(), tokenizeResult.Command, request);
 
-                var initializer = CreateInitializer(initializationRequest);
+                var initializer = InitializerProvider();
                 var initializationResult = initializer.Initialize(initializationRequest);
                 if (!initializationResult.IsSucceed)
                 {
@@ -75,11 +132,11 @@ namespace SimpleCommandParser.Core.ParseStrategy
         }
 
         /// <inheritdoc />
-        public ICommandParseResult<object> ParseCommands(MultipleCommandParseRequest request)
+        public virtual ICommandParseResult<object> ParseCommands(MultipleCommandParseRequest request)
         {
             try
             {
-                var untypedCommandCreator = CreateTokenizer(request);
+                var untypedCommandCreator = TokenizerProvider();
                 if (untypedCommandCreator == null)
                     throw new CommandParserException($"Не удалось получить парсер команд для запроса {request}");
                 
@@ -90,7 +147,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
                         new CommandParseError(tokenizeResult.ErrorsText, tokenizeResult.ErrorCode));
                 }
 
-                var typeResolver = CreateTypeResolver(request, tokenizeResult.Command);
+                var typeResolver = TypeResolverProvider();
                 if (typeResolver == null)
                     throw new CommandParserException($"Не удалось получить резолвер типа модели для запроса {request}");
 
@@ -107,7 +164,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
                 var initializationRequest = new CommandInitializationRequest(
                     typeResolution.CommandType, instance, tokenizeResult.Command, request);
 
-                var initializer = CreateInitializer(initializationRequest);
+                var initializer = InitializerProvider();
                 var initializationResult = initializer.Initialize(initializationRequest);
                 if (!initializationResult.IsSucceed)
                 {
@@ -126,37 +183,6 @@ namespace SimpleCommandParser.Core.ParseStrategy
             {
                 throw new CommandParserException($"Не удалось выполнить разбор команды для запроса {request}", e);
             }
-        }
-        
-        /// <summary>
-        /// Создает экземпляр компонента для выделения токенов из команды.
-        /// </summary>
-        /// <returns>Экземпляр компонента.</returns>
-        protected virtual ICommandTokenizer CreateTokenizer(ICommandParseRequest request)
-        {
-            return _untypedCommandCreatorProvider.Value;
-        }
-
-        /// <summary>
-        /// Создает экземпляр инициализатора модели.
-        /// </summary>
-        /// <param name="request">Запрос на выполнение инициализации модели команды.</param>
-        /// <returns>Экземпляр инициалиатора.</returns>
-        protected virtual ICommandInitializer CreateInitializer(ICommandInitializationRequest request)
-        {
-            return _modelInitializerProvider.Value;
-        }
-
-        /// <summary>
-        /// Создает резолвер для типа модели команды.
-        /// </summary>
-        /// <param name="request">Запрос разбора команды.</param>
-        /// <param name="command">Команда.</param>
-        /// <returns>Резолвер типа команды.</returns>
-        protected virtual ICommandModelTypeResolver CreateTypeResolver(
-            MultipleCommandParseRequest request, TokenizedCommand command)
-        {
-            return _typeResolverProvider.Value;
         }
     }
 }
