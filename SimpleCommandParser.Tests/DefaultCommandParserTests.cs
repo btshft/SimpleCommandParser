@@ -110,7 +110,7 @@ namespace SimpleCommandParser.Tests
             
             // Assert         
             Assert.NotNull(parsedCommand);          
-            Assert.Equal(true, parsedCommand.Value.Option7);
+            Assert.True(parsedCommand.Value.Option7);
         }
         
         [Fact]
@@ -130,7 +130,7 @@ namespace SimpleCommandParser.Tests
             Assert.Equal("abc", parsedCommand.Value.RequiredArg1);
             Assert.Equal("cde", parsedCommand.Value.RequiredArg2);
             Assert.Equal("kk", parsedCommand.Value.OptionalArg3);
-            Assert.Equal(true, parsedCommand.Value.Option7);
+            Assert.True(parsedCommand.Value.Option7);
         }
 
         [Fact]

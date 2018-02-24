@@ -121,7 +121,7 @@ namespace SimpleCommandParser.Core.ParseStrategy
  
                 return new ParsedCommand<TModel>((TModel)initializationResult.InitializedCommand);
             }
-            catch (CommandParserException _)
+            catch (CommandParserException)
             {
                 throw;
             }
