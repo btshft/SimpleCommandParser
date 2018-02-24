@@ -94,4 +94,4 @@ var parser = builder.
 
 var command = parser.ParseCommand<Sample>("...");
 ```
-Подробные примеры замены компонентов билдера представлены в файле `Examples.cs` проекта `SimpleCommandParser.Examples`.
+Подробные примеры замены компонентов билдера представлены в файле [Examples.cs](https://github.com/rex-core/SimpleCommandParser/blob/master/SimpleCommandParser.Examples/Examples.cs).
