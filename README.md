@@ -1,6 +1,6 @@
 # Очередная  'Simple' библиотека
 
-[![NuGet version (Newtonsoft.Json)](https://img.shields.io/nuget/v/SimpleCommandParser.svg?style=flat-square)](https://www.nuget.org/packages/SimpleCommandParser/)
+[![NuGet version](https://img.shields.io/nuget/v/SimpleCommandParser.svg?style=flat-square)](https://www.nuget.org/packages/SimpleCommandParser/)
 
 Да, это ещё одна библиотека, которая начинается с префикса Simple. А как их ещё называть?
 >Поддерживаемые платформы .NET 4.5 и .NET CORE 2.0
