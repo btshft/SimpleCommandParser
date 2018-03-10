@@ -25,7 +25,7 @@ class CreatePackageCommand
       public bool IsHidden { get; set; }
 }
 
-var input = "create :n 'package name' :t cool_package :s :h"; 
+var input = "create :n 'package name' :t cool_package :h"; 
 
 /*
 var input = "create :name 'package name' :tag cool_package :hidden";
